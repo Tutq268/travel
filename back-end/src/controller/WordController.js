@@ -7,7 +7,12 @@ const addNewWord = (req,res) =>{
     return res.send("add new word")
 }
 
+const editWord = (req,res) =>{
+    return res.send("edit word")
+}
+
 module.exports = {
     getAllWord: getAllWord,
-    addNewWord: addNewWord
+    addNewWord: addNewWord,
+    editWord: editWord
 }

@@ -94,7 +94,7 @@ const WordScreen = ({navigation}) =>{
                     <View style={{flexDirection: 'row',marginHorizontal: 16,justifyContent:"space-between",alignItems:'center'}}>
                         <View style={{flexDirection:'row'}}>
                             <View style={styles.addDate}>
-                                <Icon 
+                                <Icon
                                     name="ios-calendar"
                                     size={26}
                                     color="#ccc"
@@ -116,10 +116,7 @@ const WordScreen = ({navigation}) =>{
                                 color="white"
                             />
                         </TouchableOpacity>
-                        
-                        
                     </View>
-              
             </Modal>
         )
     }
@@ -204,7 +201,7 @@ const WordScreen = ({navigation}) =>{
                                     </TouchableOpacity>
                                     
                                     <TouchableOpacity>
-                                        <Icon 
+                                        <Icon
                                             name="ios-chatboxes"
                                             color="#ccc"
                                             size={22}
@@ -225,7 +222,7 @@ const WordScreen = ({navigation}) =>{
                             <View style={{flexDirection: 'column',marginLeft: 16,flex: 1}}>
                                 <Text style={{fontSize: 17,fontWeight:'500'}}>Sub-tasks</Text>
                                 <TouchableOpacity
-                                     activeOpacity={0.5} 
+                                     activeOpacity={0.5}
                                      style={{flexDirection: 'row',marginTop: 8,alignItems: 'center'}}
                                      onPress={() => setOpenDialogAddSub(true)}
                                      >
@@ -252,7 +249,7 @@ const WordScreen = ({navigation}) =>{
                                                         size={23}
                                                         color="grey"
                                                     />
-                                                    <Text 
+                                                    <Text
                                                         style={{marginLeft: 16,
                                                                 fontSize: 16,
                                                                 textDecorationLine: sub.status === 'done' ? "line-through" : "none",
@@ -314,7 +311,6 @@ const WordScreen = ({navigation}) =>{
                         {_renderMdalAddWord()}
                         {_renderModalWordItem()}
                         {_renderDialogAddSub()}
-                    
             </View>
       
     )

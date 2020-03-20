@@ -6,6 +6,8 @@ let router = express.Router()
 let initRouter = (app) =>{
     router.get("/test",WordController.getAllWord)
     router.get("/add-new",WordController.addNewWord)
+    router.get("/edit-word",WordController.editWord)
+
     return app.use("/",router)
 }
 
