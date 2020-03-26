@@ -9,6 +9,7 @@ import AddWordScreen from './../component/AddWordScreen'
 import NotificationScreen from './../component/NotificationScreen'
 import ManagerScreen from './../component/ManagerScreen'
 import AddTravel from './../common/AddTravel/AddTravel'
+import AddUserToTour from './../common/AddTravel/AddUserToTour'
 import Icon from 'react-native-vector-icons/Ionicons'
 import * as ScreenName from './../constant/ScreenName'
 import TabbarIcon from './../common/TabbarIcon'
@@ -32,7 +33,8 @@ Word.navigationOptions = ({navigation}) =>{
 
 const AddWord = createStackNavigator({
     AddWord: AddWordScreen,
-    [ScreenName.ADD_TRAVEL] : AddTravel
+    [ScreenName.ADD_TRAVEL] : AddTravel,
+    [ScreenName.ADD_USER_TO_TOUR] : AddUserToTour
 })
 
 AddWord.navigationOptions = ({navigation}) =>{

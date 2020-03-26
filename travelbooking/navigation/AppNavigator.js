@@ -5,7 +5,7 @@ import { createAppContainer, createSwitchNavigator } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 import SignInScreen from './../component/SignInScreen'
 import SignUpScreen from './../component/SignUpScreen'
-
+import AuthLoadingScreen from "./../component/AuthLoadingScreen"
 const AppStack = createSwitchNavigator({
     Main: MainTabNavigation
 })
@@ -19,10 +19,11 @@ const AuthStack = createStackNavigator({
 })
 
 const RootStack = createStackNavigator({
+  AuthScreen: AuthLoadingScreen,
   Auth:AuthStack,
   App: AppStack 
 },{
-  initialRouteName:'Auth',
+  initialRouteName:'AuthScreen',
   headerMode: "none"
 })
 

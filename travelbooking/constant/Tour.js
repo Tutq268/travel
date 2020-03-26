@@ -1,0 +1,6 @@
+export const GET_LIST_TOUR = "GET_LIST_TOUR"
+export const GET_LIST_USER = "GET_LIST_USER"
+export const GET_LIST_USER_SUCCESS ="GET_LIST_USER_SUCCESS"
+export const GET_LIST_USER_FAILED = "GET_LIST_USER_FAILED"
+export const ADD_USER = "ADD_USER"
+export const REMOVE_USER = "REMOVE_USER"

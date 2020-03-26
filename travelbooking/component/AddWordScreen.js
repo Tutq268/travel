@@ -1,4 +1,4 @@
-import React,{useState} from 'react'
+import React,{useState,useEffect} from 'react'
 import { View,Text,StyleSheet,TouchableOpacity,Dimensions,FlatList,TextInput } from 'react-native'
 import {listTour} from './../common/fakeData'
 import moment from 'moment'
@@ -8,20 +8,21 @@ import SiteMap from './../common/SiteMap'
 import { Menu, MenuOption, MenuOptions, MenuTrigger, } from 'react-native-popup-menu';
 import Icon from 'react-native-vector-icons/Ionicons'
 import Dialog from "react-native-dialog"
-
+import {getListTour} from './../action/TourAction'
+import { useDispatch,useSelector } from 'react-redux'
 
 const {width,height} = Dimensions.get("window")
 const AddWordScreen = ({navigation}) =>{
     const [openHoldTicketDialog,setOpenHoldTicketDialog] = useState(false)
     const [openBookTicketDialog,setOpenBookTicketDialog] = useState(false)
-
+    const dispatch = useDispatch()
+    useEffect(() =>{
+        // dispatch(getListTour())
+    },[])
     const _renderTicketHold = (count) =>{
         return (
             <View style={{flexDirection: "row",marginRight: 16}}>
                 <Text style={{color: "red"}}>{count} vé đang được giữ</Text>
-                {/* <TouchableOpacity style={{marginLeft: 8}}>
-                    <Text style={{fontWeight: "500",color: "red",fontSize: 16}}>Chốt</Text>
-                </TouchableOpacity> */}
             </View>
         )
     }

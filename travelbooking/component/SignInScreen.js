@@ -11,7 +11,7 @@ const SignInScreen = ({navigation}) =>{
     const [errLogin,setErrLogin] = useState("")
     const [successSiginUp,setSuccessSignUp] = useState("")
     const dispatch = useDispatch()
-    const {statusSignUp,errorSignIn} = useSelector(state => state.auth)
+    const {statusSignUp,errorSignIn,loginSuccess} = useSelector(state => state.auth)
     const {isLoading,screenName} = useSelector(state => state.loading)
     useEffect(() =>{
         if(statusSignUp){
@@ -19,7 +19,10 @@ const SignInScreen = ({navigation}) =>{
                 setSuccessSignUp(statusSignUp.message)
             }
         }
-    },[statusSignUp])
+        if(loginSuccess){
+            navigation.navigate("App")
+        }
+    },[statusSignUp,loginSuccess])
 
     const _renderSuccessSignUp = () =>{
         return(

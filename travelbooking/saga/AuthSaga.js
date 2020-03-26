@@ -30,8 +30,8 @@ function* signInAccount({payload}){
     if(data.result === "ok"){
         const token = data.data.token
         const userId = data.data.userId
-        yield AsyncStorage.setItem("userToken",token ? token : "")
-        yield AsyncStorage.setItem("userId",userId ? userId : "")
+        yield AsyncStorage.setItem("userToken",token)
+        yield AsyncStorage.setItem("userId",userId)
         yield put(signInAccountSuccess())
         yield put(hideLoading())
     }else{

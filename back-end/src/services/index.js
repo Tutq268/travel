@@ -1,3 +1,5 @@
-import AuthService from './AuthServices'
+import AuthServices from './AuthServices'
+import TourServices from './TourServices'
 
-export const auth = AuthService
+export const auth = AuthServices
+export const tour = TourServices

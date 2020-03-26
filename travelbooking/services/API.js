@@ -44,4 +44,12 @@ API.signIn = (username,password) =>{
     }
     return API.instance.post("/auth/signin",param,{headers: {"Content-Type": "application/json"}})
 }
+
+API.getListTour = () =>{
+    return API.instance.get("/tour/get-list")
+}
+
+API.getListUser = () =>{
+    return API.instance.get("/tour/all-user")
+}
 export default API
