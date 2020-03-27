@@ -9,6 +9,9 @@ const TourReducer = (state = initialState,action) =>{
     switch(action.type){
         case tour.GET_LIST_TOUR:
             return state
+        
+        case tour.GET_LIST_TOUR_SUCCESS:
+            return {...state,listTour:action.payload}
         case tour.GET_LIST_USER:
             return state
         
@@ -24,6 +27,10 @@ const TourReducer = (state = initialState,action) =>{
         case tour.REMOVE_USER:
             const newUserAdd = state.userAdd.filter(user => user._id !== action.payload)
             return {...state,userAdd : newUserAdd}
+        
+        case tour.CLEAR_ADD_USER:
+            return {...state,userAdd: []}
+      
         default:
             return state
     }

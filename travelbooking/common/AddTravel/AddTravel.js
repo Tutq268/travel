@@ -1,13 +1,16 @@
 import React,{useState,useEffect} from 'react'
 import {View,Text,StyleSheet,SafeAreaView,TouchableOpacity,TextInput,Dimensions} from 'react-native'
 import {Picker} from 'native-base'
+import { useSelector,useDispatch } from 'react-redux'
 import Icon from 'react-native-vector-icons/Ionicons'
 import SiteMap from './../SiteMap'
 import moment from 'moment'
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Modal from 'react-native-modalbox'
 import * as ScreenName from './../../constant/ScreenName'
-
+import {removeUser} from './../../action/TourAction'
+import AsyncStorage from '@react-native-community/async-storage'
+import API from './../../services/API'
 
 const {width,height} = Dimensions.get("window")
 const AddTravel = ({navigation}) =>{
@@ -22,7 +25,28 @@ const AddTravel = ({navigation}) =>{
     const [users,setUsers] = useState([])
     const [errAddTour,setErrAddTour] = useState([])
     const [isOpenModal,setOpenModal] = useState(false)
-    const [date, setDate] = useState(new Date());
+    const [date, setDate] = useState(new Date())
+    const [userId,setUserId] = useState()
+    const [addSuccess,setAddSuccess] = useState(false)
+    const {userAdd} = useSelector(state => state.tour)
+    const dispatch = useDispatch()
+
+    useEffect(() =>{
+        if(addSuccess){
+            navigation.goBack()
+        }
+    },[addSuccess])
+    useEffect(() =>{
+        const getUserId = async () =>{
+            const userId = await AsyncStorage.getItem("userId")
+            setUserId(userId)
+        }
+        getUserId()
+    },[])
+    useEffect(() =>{
+        setUsers(userAdd)
+    },[userAdd])
+
     useEffect(() =>{
        const dataTour = navigation.getParam("TOUR_ITEM")
        setDataTour(dataTour)
@@ -50,8 +74,35 @@ const AddTravel = ({navigation}) =>{
 
         if(err.length > 0){
             setErrAddTour(err)
-        }else{
-            alert("add tour thanh cong")
+        }
+        else{
+            let usersId = []
+            if(userAdd.length > 0){
+                userAdd.forEach(user =>{
+                    usersId.push(user._id)
+                })
+            }
+
+           const dataNewTour = {
+            tourname: tourName,
+            tourtrip : tourTrip,
+            ticketCount : ticketCount,
+            admin: userId,
+            ticketPrice : ticketPrice,
+            tourTime : tourTime,
+            departureDate:departureDate,
+            users: usersId
+           }
+           API.addNewTour(dataNewTour).then(res =>{
+               const data = res.data
+               if(data.result === "ok"){
+                    setAddSuccess(true)
+               }else{
+                   alert(data.message)
+               }
+           }).catch(err =>{
+               console.log(err)
+           })
         }
         
     }
@@ -189,14 +240,18 @@ const AddTravel = ({navigation}) =>{
                             return(
                                 <View key={index} 
                                     style={styles.userAddStyle}>
-                                    <TouchableOpacity activeOpacity={0.6} style={styles.removeAddUser}>
+                                    <TouchableOpacity 
+                                        activeOpacity={0.6}
+                                         style={styles.removeAddUser}
+                                         onPress={() => dispatch(removeUser(user._id))}
+                                         >
                                         <Icon 
                                         name="ios-close-circle"
                                         color="grey"
                                         size={16}
                                         />
                                     </TouchableOpacity>
-                                    <Text>{user.name}</Text>
+                                    <Text style={{fontSize: 16}}>{user.username}</Text>
                                 </View>
                             )
                         })}
@@ -263,7 +318,7 @@ const styles = StyleSheet.create({
     },
     userAddStyle:{
         paddingHorizontal: 10,
-        paddingVertical: 6,
+        paddingBottom: 6,
         marginBottom: 16,
         borderColor: "#ccc",
         borderWidth: StyleSheet.hairlineWidth,

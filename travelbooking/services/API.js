@@ -52,4 +52,14 @@ API.getListTour = () =>{
 API.getListUser = () =>{
     return API.instance.get("/tour/all-user")
 }
+
+API.addNewTour = param =>{
+    return API.instance.post("/tour/add-new",param,{headers: {"Content-Type": "application/json"}})
+}
+API.bookedTour = count => {
+    const param ={
+        bookedTour: count
+    }
+    return API.instance.post("/tour/booked-tour",param)
+}
 export default API

@@ -20,7 +20,7 @@ UserSchema.statics= {
         return this.findOne({"username" : username}).exec()
     },
     findAllUser(){
-        return this.find({}).exec()
+        return this.find({}).select("-password").exec()
     }
 }
 

@@ -1,6 +1,5 @@
 import React,{useState,useEffect} from 'react'
 import { View,Text,StyleSheet,TouchableOpacity,Dimensions,FlatList,TextInput } from 'react-native'
-import {listTour} from './../common/fakeData'
 import moment from 'moment'
 import numeral from 'numeral'
 import * as ScreenName from './../constant/ScreenName'
@@ -8,16 +7,19 @@ import SiteMap from './../common/SiteMap'
 import { Menu, MenuOption, MenuOptions, MenuTrigger, } from 'react-native-popup-menu';
 import Icon from 'react-native-vector-icons/Ionicons'
 import Dialog from "react-native-dialog"
-import {getListTour} from './../action/TourAction'
+import {getListTour,clearAddUser,updateBookedTour} from './../action/TourAction'
 import { useDispatch,useSelector } from 'react-redux'
 
 const {width,height} = Dimensions.get("window")
 const AddWordScreen = ({navigation}) =>{
     const [openHoldTicketDialog,setOpenHoldTicketDialog] = useState(false)
     const [openBookTicketDialog,setOpenBookTicketDialog] = useState(false)
+    const [ticketBook,setTicketBook] = useState("")
+    const [tourChoose,setTourChoose] = useState()
+    const {listTour} = useSelector(state => state.tour)
     const dispatch = useDispatch()
     useEffect(() =>{
-        // dispatch(getListTour())
+        dispatch(getListTour())
     },[])
     const _renderTicketHold = (count) =>{
         return (
@@ -50,13 +52,18 @@ const AddWordScreen = ({navigation}) =>{
                         </MenuTrigger>
                         <MenuOptions optionsContainerStyle={{ borderRadius: 16, marginTop: 20,width: 130,paddingVertical: 10 }}>
                            <MenuOption style={{padding: 10,alignItems: 'center'}}
-                                onSelect={() => setOpenHoldTicketDialog(true)}
+                                onSelect={() => {
+                                    setOpenHoldTicketDialog(true)
+                                }}
                             >
                               <Text style={{fontSize: 18,fontWeight: '500'}}>Giữ Vé</Text>
                            </MenuOption>
 
                            <MenuOption style={{padding: 10,alignItems: 'center'}}
-                                onSelect={() => setOpenBookTicketDialog(true)}
+                                onSelect={() => {
+                                    setOpenBookTicketDialog(true)
+                                    setTourChoose(data)
+                                }}
                             >
                               <Text  style={{fontSize: 18,fontWeight: '500'}}>Chốt Vé</Text>
                            </MenuOption>
@@ -69,19 +76,19 @@ const AddWordScreen = ({navigation}) =>{
                     </Menu>
                 </View>
                 <View style={{flexDirection: 'row',marginTop: 5}}>
-                    <Text style={styles.tourName}>{data.name_tour} - </Text>
-                    <Text style={styles.tourName}>{data.tour_time}</Text>
+                    <Text style={styles.tourName}>{data.tourname} - </Text>
+                    <Text style={styles.tourName}>{data.tourTime}</Text>
                     <Text style={styles.tourName}> || </Text>
                     <View style={{flexDirection: 'row'}}>
-                         <Text style={styles.tourName}>{data.tour_booked}</Text>
+                         <Text style={styles.tourName}>{data.tourBooked.length}</Text>
                          <Text style={styles.tourName}> of </Text>
-                         <Text style={styles.tourName}>{data.count_tour}</Text>
+                         <Text style={styles.tourName}>{data.ticketCount}</Text>
                     </View>
                 </View>
-                <Text style={{marginTop: 3,fontSize: 17,color: 'grey',fontWeight:'500'}}>{data.tour_schedule}</Text>
+                <Text style={{marginTop: 3,fontSize: 17,color: 'grey',fontWeight:'500'}}>{data.tourtrip}</Text>
                 <View style={{flexDirection: 'row',justifyContent:'space-between',paddingRight: 16,marginTop: 5}}>
                      <Text style={{fontSize: 15,color:"grey"}}>Giá</Text>
-                     <Text style={{fontSize: 15,fontWeight:'500'}}>{numeral(data.tour_price).format('0,0')} vnđ</Text>
+                     <Text style={{fontSize: 15,fontWeight:'500'}}>{numeral(data.ticketPrice).format('0,0')} vnđ</Text>
                 </View>
             </View>
         )
@@ -101,7 +108,10 @@ const AddWordScreen = ({navigation}) =>{
     const _renderAddTour = () =>{
         return(
             <TouchableOpacity activeOpacity={0.5} style={styles.addTour} 
-                onPress={() => SiteMap.showScreen(navigation,ScreenName.ADD_TRAVEL,{TOUR_ITEM: "add"})}>
+                onPress={() => {
+                    dispatch(clearAddUser())
+                    SiteMap.showScreen(navigation,ScreenName.ADD_TRAVEL,{TOUR_ITEM: "add"})
+                    }}>
                 <Text style={{color: "white",fontSize: 20}}>Add Tour</Text>
              </TouchableOpacity>
         )
@@ -123,25 +133,46 @@ const AddWordScreen = ({navigation}) =>{
         )
     }
 
+    const handleTicketBook = () =>{
+        if(!tourChoose) {
+            setOpenBookTicketDialog(false)
+            setTicketBook("")
+            return
+        }
+        if(ticketBook === "" || +ticketBook < 0) {
+            setOpenBookTicketDialog(false)
+            setTicketBook("")
+            return
+        }
+        const data = {
+            tourId: tourChoose._id,
+            countBooked: ticketBook
+        }
+        setOpenBookTicketDialog(false)
+        dispatch(updateBookedTour(data))
+
+    }
     const _renderBookTicktDialog = () =>{
         return(
             <Dialog.Container visible={openBookTicketDialog}>
             <Dialog.Title>Số chỗ cần đặt</Dialog.Title>
                 <TextInput
                         style={{borderColor: "#ccc",paddingHorizontal: 16,marginBottom: 16,fontSize:18}}
+                        value={ticketBook}
+                        onChangeText={(text) => setTicketBook(text)}
                         placeholder="Số vé muốn đặt"
                         autoFocus={true}
                         keyboardType="numeric"
                     />
             <Dialog.Button style={{color: 'red'}} label="Cancel" onPress={() => setOpenBookTicketDialog(false)} />
-            <Dialog.Button label="Confirm" onPress={() => setOpenBookTicketDialog(false)}/>
+            <Dialog.Button label="Confirm" onPress={() => handleTicketBook()}/>
         </Dialog.Container>
         )
     }
 
     return (
         <View style={styles.container}>
-            {_renderListTour()}
+            {listTour && _renderListTour()}
             {_renderAddTour()}
             {_renderHoldTicketDialog()}
             {_renderBookTicktDialog()}

@@ -6,6 +6,13 @@ export const getListTour = () =>{
     }
 }
 
+export const getListTourSuccess = (data) =>{
+    return{
+        type: tour.GET_LIST_TOUR_SUCCESS,
+        payload: data
+    }
+}
+
 export const getListUser = () =>{
     return {
         type: tour.GET_LIST_USER
@@ -39,3 +46,31 @@ export const removeUser = userId => {
         payload: userId
     }
 }
+
+export const clearAddUser = () =>{
+    return {
+        type: tour.CLEAR_ADD_USER
+    }
+}
+
+export const postAddNewTour = (data) =>{
+    return{
+        type: tour.POST_ADD_NEW_TOUR,
+        payload: data
+    }
+}
+
+export const updateBookedTour = data =>{
+    return {
+        type: tour.UPDATE_BOOKED_TOUR,
+        payload: data
+    }
+}
+
+export const updateBookedTourSuccess = data =>{
+    return {
+        type: tour.UPDATE_BOOKED_TOUR_SUCCESS,
+        payload: data
+    }
+}
+

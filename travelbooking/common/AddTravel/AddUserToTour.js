@@ -20,17 +20,12 @@ const AddUserToTour = ({navigation}) =>{
     },[])
   
     useEffect(() =>{
-        if(userAdd.includes(1)){
-            console.log("123")
-        }else{
-            console.log("abc")
-        }
         dispatch(getListUser())
     },[])
     const _renderHeader = () =>{
         return(
             <View style={{flexDirection: "row",paddingHorizontal: 16, alignItems:'center'}}>
-                <TouchableOpacity activeOpacity={0.5} onPress ={() =>SiteMap.goBack(navigation)}>
+                <TouchableOpacity activeOpacity={0.5} onPress ={() =>navigation.goBack()}>
                     <Icon 
                         name="ios-arrow-round-back"
                         size={36}
