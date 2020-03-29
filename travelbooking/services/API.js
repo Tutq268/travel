@@ -62,4 +62,22 @@ API.bookedTour = count => {
     }
     return API.instance.post("/tour/booked-tour",param)
 }
+
+API.getTourDetail = tourId =>{
+    return API.instance.get(`/tour/tour-detail/${tourId}`)
+}
+API.getMe = () =>{
+    return API.instance.get("/tour/get-me")
+}
+API.logOut = () =>{
+    return API.instance.get("/tour/logout")
+}
+
+API.changeInfo = param =>{
+    return API.instance.post("/user/edit-info",param)
+}
+
+API.changTour = param => {
+    return API.instance.post("/tour/edit-tour",param)
+}
 export default API

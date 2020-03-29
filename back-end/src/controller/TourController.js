@@ -71,9 +71,75 @@ let addBookedTour = async (req,res) =>{
     }
 }
 
+let getTourDetail = async (req,res)=>{
+    const {tourId} = req.params
+    try {
+        const getTourInfo = await tour.getTourInfo(tourId)
+        return res.json({
+            result : "ok",
+            message: "get data tour detail success",
+            data: getTourInfo
+        })
+    } catch (error) {
+        return res.json({
+            result : "failed",
+            message: error,
+            data: null
+        })
+    }
+
+}
+
+let getMyInfo = async (req,res) =>{
+   
+    try {
+        const myInfo = await tour.getMyInfo(req.user._id)
+        return res.json({
+            result: "ok",
+            message: "get my info success",
+            data: myInfo
+        })
+    } catch (error) {
+        return res.json({
+            result: "failed",
+            message: error,
+            data: null
+        })
+    }
+}
+
+let logout = (req,res)=>{
+    console.log("123")
+    return res.json({
+        result: "ok",
+        message : "đăng xuất thành công",
+        data: null
+    })
+}
+
+let editTourInfo = async (req,res)=>{
+    try {
+        const updateInfoTour = await tour.updateTour(req.body)
+        return res.json({
+            result: "ok",
+            message:"Cập nhật tour thành công",
+            data: updateInfoTour
+        })
+    } catch (error) {
+        return res.json({
+            result: "failed",
+            message: error,
+            data: null
+        })
+    }
+}
 module.exports ={
     getListTour : getListTour,
     getAllUser: getAllUser,
     addNewTour:addNewTour,
-    addBookedTour:addBookedTour
+    addBookedTour:addBookedTour,
+    getTourDetail:getTourDetail,
+    getMyInfo:getMyInfo,
+    logout:logout,
+    editTourInfo:editTourInfo
 }

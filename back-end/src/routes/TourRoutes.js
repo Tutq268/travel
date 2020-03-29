@@ -8,7 +8,10 @@ let initTourRouter = (app) =>{
     router.get("/all-user",requireAuth,tour.getAllUser)
     router.post("/add-new",requireAuth,tour.addNewTour)
     router.post("/booked-tour",requireAuth,tour.addBookedTour)
-
+    router.get("/tour-detail/:tourId",requireAuth,tour.getTourDetail)
+    router.get("/get-me",requireAuth,tour.getMyInfo)
+    router.get("/logout",requireAuth,tour.logout)
+    router.post("/edit-tour",requireAuth,tour.editTourInfo)
     return app.use("/api/tour",router)
 }
 

@@ -7,7 +7,7 @@ import SiteMap from './../common/SiteMap'
 import { Menu, MenuOption, MenuOptions, MenuTrigger, } from 'react-native-popup-menu';
 import Icon from 'react-native-vector-icons/Ionicons'
 import Dialog from "react-native-dialog"
-import {getListTour,clearAddUser,updateBookedTour} from './../action/TourAction'
+import {getListTour,clearAddUser,updateBookedTour,addUser} from './../action/TourAction'
 import { useDispatch,useSelector } from 'react-redux'
 
 const {width,height} = Dimensions.get("window")
@@ -31,9 +31,10 @@ const AddWordScreen = ({navigation}) =>{
     const _renderItem = item =>{
         const data = item.item
         return(
-            <View 
+            <TouchableOpacity 
                 style={styles.tourItem}
                  activeOpacity={0.5}
+                 onPress={() => SiteMap.showScreen(navigation,ScreenName.TOUR_DETAIL,{tourId: data._id})}
                  >
                 <View style={{flexDirection:'row',justifyContent:'space-between'}}>
                     <View style={{flexDirection: 'row'}}>
@@ -46,7 +47,7 @@ const AddWordScreen = ({navigation}) =>{
                         <MenuTrigger>
                             <Icon 
                                 name="ios-more"
-                                size={20}
+                                size={26}
                                 color="grey"
                                 />
                         </MenuTrigger>
@@ -63,40 +64,45 @@ const AddWordScreen = ({navigation}) =>{
                                 onSelect={() => {
                                     setOpenBookTicketDialog(true)
                                     setTourChoose(data)
+                                    setTicketBook("")
                                 }}
                             >
                               <Text  style={{fontSize: 18,fontWeight: '500'}}>Chốt Vé</Text>
                            </MenuOption>
                            <MenuOption style={{padding: 10,alignItems: 'center'}}
-                            onSelect={() => SiteMap.showScreen(navigation,ScreenName.ADD_TRAVEL,{TOUR_ITEM: data})}
+                            onSelect={() =>{
+                                dispatch(addUser(data.users))
+                                 SiteMap.showScreen(navigation,ScreenName.ADD_TRAVEL,{TOUR_ITEM: data})
+                                }}
                            >
                               <Text  style={{fontSize: 18,fontWeight: '500'}}>Chỉnh Sửa</Text>
                            </MenuOption>
                         </MenuOptions>
                     </Menu>
                 </View>
-                <View style={{flexDirection: 'row',marginTop: 5}}>
+                <View style={{flexDirection: 'row',marginTop: 5,flex: 1,flexWrap:'wrap'}}>
                     <Text style={styles.tourName}>{data.tourname} - </Text>
                     <Text style={styles.tourName}>{data.tourTime}</Text>
                     <Text style={styles.tourName}> || </Text>
                     <View style={{flexDirection: 'row'}}>
-                         <Text style={styles.tourName}>{data.tourBooked.length}</Text>
+                         <Text style={styles.tourName}>{data.tourBookedCount}</Text>
                          <Text style={styles.tourName}> of </Text>
                          <Text style={styles.tourName}>{data.ticketCount}</Text>
                     </View>
                 </View>
-                <Text style={{marginTop: 3,fontSize: 17,color: 'grey',fontWeight:'500'}}>{data.tourtrip}</Text>
+                <Text style={{marginTop: 3,fontSize: 17,color: 'grey',fontWeight:'500',flex: 1,flexWrap: 'wrap'}}>{data.tourtrip}</Text>
                 <View style={{flexDirection: 'row',justifyContent:'space-between',paddingRight: 16,marginTop: 5}}>
                      <Text style={{fontSize: 15,color:"grey"}}>Giá</Text>
                      <Text style={{fontSize: 15,fontWeight:'500'}}>{numeral(data.ticketPrice).format('0,0')} vnđ</Text>
                 </View>
-            </View>
+            </TouchableOpacity>
         )
     }
 
     const _renderListTour = () =>{
         return(
             <FlatList 
+                style={{marginBottom: 68}}
                 data={listTour}
                 showsVerticalScrollIndicator={false}
                 keyExtractor={(item,index) => `${index}`}
@@ -144,13 +150,17 @@ const AddWordScreen = ({navigation}) =>{
             setTicketBook("")
             return
         }
+        if(+ticketBook + tourChoose.tourBookedCount > tourChoose.ticketCount){
+            alert("Không còn đủ vé cho tour này")
+            setTicketBook("")
+            return
+        }
         const data = {
             tourId: tourChoose._id,
             countBooked: ticketBook
         }
         setOpenBookTicketDialog(false)
         dispatch(updateBookedTour(data))
-
     }
     const _renderBookTicktDialog = () =>{
         return(

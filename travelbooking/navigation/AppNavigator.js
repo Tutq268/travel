@@ -15,7 +15,8 @@ const AuthStack = createStackNavigator({
   SignUp: SignUpScreen
 },{
   initialRouteName: "SignIn",
-  headerMode: 'none'
+  headerMode: 'none',
+  
 })
 
 const RootStack = createStackNavigator({
@@ -24,7 +25,10 @@ const RootStack = createStackNavigator({
   App: AppStack 
 },{
   initialRouteName:'AuthScreen',
-  headerMode: "none"
+  headerMode: "none",
+  defaultNavigationOptions: {
+    gesturesEnabled: false,
+  }
 })
 
 export default createAppContainer(RootStack)

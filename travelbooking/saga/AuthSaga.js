@@ -35,7 +35,6 @@ function* signInAccount({payload}){
         yield put(signInAccountSuccess())
         yield put(hideLoading())
     }else{
-        alert(data.message)
         yield put(signInAccountFailed(data.message))
         yield put(hideLoading())
     }

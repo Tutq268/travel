@@ -15,6 +15,23 @@ const TourReducer = (state = initialState,action) =>{
         case tour.GET_LIST_USER:
             return state
         
+        case tour.ADD_TOUR:
+            if(!state.listTour){
+                return {...state,listTour: [action.payload]}
+            }else{
+                return {...state,listTour: state.listTour.concat(action.payload)}
+            }
+        
+        case tour.EDIT_TOUR:
+            const dataEdit = action.payload
+            const findIndexTour = state.listTour.findIndex(tour => tour._id === dataEdit._id)
+            const newTourEdit = state.listTour.map((tour,index) =>{
+                if(index === findIndexTour){
+                    return dataEdit
+                }
+                return tour
+            })
+            return {...state,listTour: newTourEdit}
         case tour.GET_LIST_USER_SUCCESS:
             return {...state,listUser: action.payload}
 
@@ -30,7 +47,20 @@ const TourReducer = (state = initialState,action) =>{
         
         case tour.CLEAR_ADD_USER:
             return {...state,userAdd: []}
-      
+        
+        case tour.UPDATE_BOOKED_TOUR_SUCCESS:
+            const data = action.payload
+            const newTourBooked = state.listTour.map((tour,index) =>{
+                if(tour._id === data.tourId){
+                    return {
+                        ...tour,
+                        tourBookedCount: data.count,
+                        tourBooked: tour.tourBooked.concat(data.bookedId)
+                    }
+                }
+                return tour
+            })
+            return {...state,listTour: newTourBooked}
         default:
             return state
     }

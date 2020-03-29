@@ -6,6 +6,7 @@ import { createStackNavigator } from 'react-navigation-stack'
 
 import WordScreen from './../component/WorkScreen'
 import AddWordScreen from './../component/AddWordScreen'
+import TourDetail from './../component/TourDetail'
 import NotificationScreen from './../component/NotificationScreen'
 import ManagerScreen from './../component/ManagerScreen'
 import AddTravel from './../common/AddTravel/AddTravel'
@@ -34,7 +35,8 @@ Word.navigationOptions = ({navigation}) =>{
 const AddWord = createStackNavigator({
     AddWord: AddWordScreen,
     [ScreenName.ADD_TRAVEL] : AddTravel,
-    [ScreenName.ADD_USER_TO_TOUR] : AddUserToTour
+    [ScreenName.ADD_USER_TO_TOUR] : AddUserToTour,
+    [ScreenName.TOUR_DETAIL]: TourDetail
 })
 
 AddWord.navigationOptions = ({navigation}) =>{

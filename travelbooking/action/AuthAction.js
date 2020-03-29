@@ -43,6 +43,12 @@ export const signInAccountSuccess = data =>{
     }
 }
 
+export const logoutAccount = () =>{
+    return{
+        type: auth.LOGOUT_ACCOUNT
+    }
+}
+
 export const signInAccountFailed = data =>{
     return {
         type: auth.SIGNIN_ACCOUNT_FAILED,

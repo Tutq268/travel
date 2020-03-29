@@ -19,6 +19,20 @@ export const getListUser = () =>{
     }
 }
 
+export const addNewTour = data =>{
+    return{
+        type: tour.ADD_TOUR,
+        payload: data
+    }
+}
+
+export const editTour = data =>{
+    return{
+        type: tour.EDIT_TOUR,
+        payload: data
+    }
+}
+
 export const getListUserSuccess = (data) =>{
     return{
         type: tour.GET_LIST_USER_SUCCESS,

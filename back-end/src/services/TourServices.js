@@ -35,29 +35,65 @@ let getAllTour = (userId) =>{
 let updateBookTour = (tourId,countBooked,userId) =>{
     return new Promise(async (resolve,reject) =>{
         const findTour = await TourModel.findTourById(tourId)
+        if(findTour.tourBookedCount + (+countBooked) > findTour.ticketCount){
+            return reject("Số lượng cần đặt quá lớn. không còn đủ chỗ")
+        }
         if(!findTour){
             return reject("Không tìm tháy tour. Vui lòng thử lại")
         }
-        const arrBooked = []
-        for(let i =0;i<+countBooked;i++){
-            const item ={
-                user : userId
-            }
-            const addNewBooked = await BookedModel.addNewBooked(item)
-            if(!addNewBooked){
-                return reject("Chốt vé thất bại. vui long thử lại")
-            }
-            arrBooked.push(addNewBooked._id)
+        const itemBooked = {
+            user: userId,
+            tour: tourId,
+            count: +countBooked
         }
-        findTour.tourBooked = findTour.tourBooked.concat(await Promise.all(arrBooked))
+        const newBookedTour = await BookedModel.addNewBooked(itemBooked)
+        if(!newBookedTour){
+            return reject("Chốt vé thất bại. Vui lòng thử lại")
+        }
+        findTour.tourBookedCount = findTour.tourBookedCount + (+countBooked)
+        findTour.tourBooked = findTour.tourBooked.concat(newBookedTour._id)
         findTour.save()
+        return resolve({count: findTour.tourBookedCount,bookedId: newBookedTour._id,tourId: findTour._id})
+    })
+}
+
+let getTourInfo = (tourId) =>{
+    return new Promise(async (resolve,reject) =>{
+        const findTour = await TourModel.findTourByIdAndPopulate(tourId)
+        if(!findTour){
+            return reject("không tìm thấy tour, vui lòng thử lại")
+        }
         return resolve(findTour)
     })
 }
 
+let getMyInfo = (userId) =>{
+    return new Promise(async (resolve,reject) =>{
+        const getInfo = await UserModel.findUserById(userId)
+        if(!getInfo){
+            return reject("Lấy thông tin thất bại")
+        }
+        return resolve(getInfo)
+    })
+}
+
+let updateTour = item =>{
+    return new Promise(async (resolve,reject) =>{
+        const updateTour = await TourModel.updateTourInfo(item)
+        if(updateTour.nModified === 0){
+            return reject("cập nhật thông tin tour thất bại")
+        }else{
+            const findTour = await TourModel.findTourById(item._id)
+            return resolve(findTour)
+        }
+    })
+}
 module.exports = {
     getAllUser:getAllUser,
     addNewTour:addNewTour,
     getAllTour:getAllTour,
-    updateBookTour:updateBookTour
+    updateBookTour:updateBookTour,
+    getTourInfo:getTourInfo,
+    getMyInfo:getMyInfo,
+    updateTour:updateTour
 }

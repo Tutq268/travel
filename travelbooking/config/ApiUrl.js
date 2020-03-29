@@ -1,4 +1,4 @@
 export default {
-    host : "http://localhost:8686",
-    baseUrl: "http://localhost:8686/api"
+    host : "http://192.168.1.4:8686",
+    baseUrl: "http://192.168.1.4:8686/api"
 }

@@ -25,6 +25,13 @@ function* getListUser(){
 
 function* updateBooked({payload}){
     const res = yield API.bookedTour(payload)
+    const data = res.data
+    if(data.result ==="ok"){
+        yield put(updateBookedTourSuccess(data.data))
+    }
+    else{
+        alert(data.message)
+    }
 }
 
 export function* getListTour(){

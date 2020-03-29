@@ -26,6 +26,8 @@ const AuthReducer = (state = initialState,action) =>{
         case auth.SIGNIN_ACCOUNT_FAILED:
             return {...state,errorSignIn: action.payload}
 
+        case auth.LOGOUT_ACCOUNT:
+            return {...state,statusSignUp: null,errorSignIn: null,loginSuccess: false}
         default:
             return state
     }

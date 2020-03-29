@@ -8,9 +8,10 @@ import moment from 'moment'
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Modal from 'react-native-modalbox'
 import * as ScreenName from './../../constant/ScreenName'
-import {removeUser} from './../../action/TourAction'
+import {removeUser,addNewTour,editTour,clearAddUser} from './../../action/TourAction'
 import AsyncStorage from '@react-native-community/async-storage'
 import API from './../../services/API'
+import _ from 'lodash'
 
 const {width,height} = Dimensions.get("window")
 const AddTravel = ({navigation}) =>{
@@ -52,12 +53,12 @@ const AddTravel = ({navigation}) =>{
        setDataTour(dataTour)
        if(dataTour === "add") return
        else{
-            setTourName(dataTour.name_tour)
-            setTourTrip(dataTour.tour_schedule)
-            setTicketCount(dataTour.count_tour)
-            setTicketPrice(dataTour.tour_price)
-            setTourTime(dataTour.tour_time)
-            setDepartureDate(dataTour.departure_date)
+            setTourName(dataTour.tourname)
+            setTourTrip(dataTour.tourtrip)
+            setTicketCount(dataTour.ticketCount)
+            setTicketPrice(dataTour.ticketPrice)
+            setTourTime(dataTour.tourTime)
+            setDepartureDate(dataTour.departureDate)
             setSelectAirlines(dataTour.airlines)
             setUsers(dataTour.users)
        }
@@ -91,11 +92,13 @@ const AddTravel = ({navigation}) =>{
             ticketPrice : ticketPrice,
             tourTime : tourTime,
             departureDate:departureDate,
-            users: usersId
+            users: usersId,
+            airlines: selectAirlines
            }
            API.addNewTour(dataNewTour).then(res =>{
                const data = res.data
                if(data.result === "ok"){
+                   dispatch(addNewTour(data.data))
                     setAddSuccess(true)
                }else{
                    alert(data.message)
@@ -104,10 +107,69 @@ const AddTravel = ({navigation}) =>{
                console.log(err)
            })
         }
-        
     }
     const _handleEditTour = () =>{
-        alert("edit tour")
+        const dataTour = navigation.getParam("TOUR_ITEM")
+        let editData = {}
+        if(tourName !== dataTour.tourname){
+            editData.tourname = tourName
+        }
+        if(tourTrip !== dataTour.tourtrip){
+            editData.tourtrip = tourTrip
+        }
+        if(ticketCount !== dataTour.ticketCount){
+            if(ticketCount < 0){
+               alert("Số vé phải lớn hơn 0")
+            }
+            if(+ticketCount < dataTour.tourBookedCount){
+                alert("Số vé đã chốt lớn hơn số vé muốn sửa")
+                return
+            }
+            editData.ticketCount = ticketCount
+        }
+        if(ticketPrice !== dataTour.ticketPrice){
+            if(ticketPrice < 0){
+                alert("Giá vé phải lớn hơn 0 vnđ")
+                return
+            }
+            editData.ticketPrice = ticketPrice
+        }
+        if(tourTime !== dataTour.tourTime){
+            editData.tourTime = tourTime
+        }
+        if(departureDate !== dataTour.departureDate){
+            editData.departureDate = departureDate
+        } 
+        if(selectAirlines !== dataTour.airlines){
+            editData.airlines = selectAirlines
+        } 
+        if(users !== dataTour.users){
+            let usersId = []
+            if(userAdd.length > 0){
+                userAdd.forEach(user =>{
+                    usersId.push(user._id)
+                })
+            }
+            editData.users = usersId
+        }
+        if(_.isEmpty(editData)){
+            alert("Bạn Chưa Thay Đổi Gì Hết")
+            return
+        }else{
+            editData._id = dataTour._id
+            API.changTour(editData).then(res =>{
+                const data = res.data
+                if(data.result === "ok"){
+                    dispatch(editTour(data.data))
+                    dispatch(clearAddUser())
+                    navigation.goBack()
+                }else{
+                    alert(data.message)
+                }
+            }).catch(err => {
+                console.log(err)
+            })
+        }
     }
    
     const _renderHeader = () =>{
@@ -141,9 +203,7 @@ const AddTravel = ({navigation}) =>{
         )
     }
 
-    
     const _renderFormAddTravel = () =>{
-        const options = ["Vietnam Airline", "Jetstar Pacific Airline","Vietjet Air","BamBoo Airways","Japan Airlines","Asiana Airlines","Air France"]
         return(
             <View style={{flex: 1, paddingHorizontal: 16,marginTop: 16}}>
                 <View style={{paddingVertical: 10}}>
@@ -216,13 +276,13 @@ const AddTravel = ({navigation}) =>{
                         selectedValue={selectAirlines}
                         onValueChange={(value) => setSelectAirlines(value)}
                         >
-                        <Picker.Item label="Vietnam Airline" value="key0" />
-                        <Picker.Item label="Jetstar Pacific Airline" value="key1" />
-                        <Picker.Item label="Vietjet Air" value="key2" />
-                        <Picker.Item label="BamBoo Airways" value="key3" />
-                        <Picker.Item label="Japan Airlines" value="key4" />
-                        <Picker.Item label="Asiana Airlines" value="key5" />
-                        <Picker.Item label="Air France" value="key6" />
+                        <Picker.Item label="Vietnam Airline" value="Vietnam Airline" />
+                        <Picker.Item label="Jetstar Pacific Airline" value="Jetstar Pacific Airline" />
+                        <Picker.Item label="Vietjet Air" value="Vietjet Air" />
+                        <Picker.Item label="BamBoo Airways" value="BamBoo Airways" />
+                        <Picker.Item label="Japan Airlines" value="Japan Airlines" />
+                        <Picker.Item label="Asiana Airlines" value="Asiana Airlines" />
+                        <Picker.Item label="Air France" value="Air France" />
                     </Picker>
                 </View>
 
