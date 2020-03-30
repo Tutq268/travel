@@ -109,7 +109,6 @@ let getMyInfo = async (req,res) =>{
 }
 
 let logout = (req,res)=>{
-    console.log("123")
     return res.json({
         result: "ok",
         message : "đăng xuất thành công",

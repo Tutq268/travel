@@ -2,12 +2,13 @@ import * as tour from './../constant/Tour'
 import {put,takeEvery,select} from 'redux-saga/effects'
 import { getListUserSuccess,getListUserFailed,getListTourSuccess,updateBookedTourSuccess } from './../action/TourAction'
 import API from './../services/API'
+import _ from 'lodash'
 
 function* listTour(){
     const res = yield API.getListTour()
     const data = res.data
     if(data.result === "ok"){
-        yield put(getListTourSuccess(data.data))
+        yield put(getListTourSuccess(_.reverse(data.data)))
     }else{
         alert(data.message)
     }

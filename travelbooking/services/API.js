@@ -1,6 +1,7 @@
 import axios from 'axios'
 import URL from './../config/ApiUrl'
 import AsyncStorage from '@react-native-community/async-storage'
+import { Alert } from 'react-native'
 const getInstance = () => {
     
     const instance = axios.create({
@@ -80,4 +81,13 @@ API.changeInfo = param =>{
 API.changTour = param => {
     return API.instance.post("/tour/edit-tour",param)
 }
+
+API.getAllNotification = () =>{
+    return API.instance.get("/notification/get-all")
+}
+
+API.readNotification = (notifId) =>{
+    return API.instance.put(`/notification/read/${notifId}`)
+}
+
 export default API

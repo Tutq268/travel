@@ -4,8 +4,8 @@ import requireAuth from './../middlewares/requireAuth'
 let router = express.Router()
 
 let initUserRouter = (app) =>{
-    
-    return app.use("/api/user",requireAuth,user.updateInfoAccount)
+    router.post("/edit-info",requireAuth,user.updateInfoAccount)
+    return app.use("/api/user",router)
 }
 
 module.exports = initUserRouter

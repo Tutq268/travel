@@ -73,7 +73,8 @@ const ManagerScreen = ({navigation}) =>{
                 return
             }else{
                 const editInfo = {email: emailEdit}
-                API.changeInfo(editInfo).then(res=>{
+                API.changeInfo(editInfo)
+                    .then(res=>{
                     const data= res.data
                     if(data.result === "ok"){
                         const newInfo = {

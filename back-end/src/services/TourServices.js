@@ -1,6 +1,7 @@
 import UserModel from './../model/UserModel'
 import TourModel from './../model/TourModel'
 import BookedModel from './../model/BookedModel'
+import NotificationModel from './../model/NotificationModel'
 let getAllUser = () =>{
     return new Promise(async (resolve,reject) =>{
         const getUser = await UserModel.findAllUser()
@@ -18,7 +19,26 @@ let addNewTour = data =>{
         if(!addNew){
             return reject("Thêm tour mới thất bại")
         }
-        return resolve(addNew)
+        else{
+            if(data.users.length >0){
+                let addNotif = data.users.map(async user =>{
+                    const newNotif = {
+                        notifType: "add_user",
+                        content: "đã thêm bạn vào một tour mới",
+                        sendUser: data.admin,
+                        tourId: addNew._id,
+                        receviceUser : user
+                    }
+                    const createNewNotif = await NotificationModel.createNew(newNotif)
+                    if(!createNewNotif){
+                        return reject("Thêm thông báo thất bại")
+                    }
+                    return createNewNotif
+                })
+                await Promise.all(addNotif)
+            }
+            return resolve(addNew)
+        }
     })
 }
 
@@ -53,6 +73,35 @@ let updateBookTour = (tourId,countBooked,userId) =>{
         findTour.tourBookedCount = findTour.tourBookedCount + (+countBooked)
         findTour.tourBooked = findTour.tourBooked.concat(newBookedTour._id)
         findTour.save()
+        if(!userId.equals(findTour.admin)){
+            const newNotifAdd = {
+                notifType: "booked_ticket",
+                content: `đã chốt được ${countBooked} chỗ trong tour ${findTour.tourname}`,
+                sendUser: userId,
+                tourId: findTour._id,
+                receviceUser : findTour.admin
+            }
+            await NotificationModel.createNew(newNotifAdd)
+        }
+        if(findTour.users.length > 0){
+            const pushNotifBookedTicket = findTour.users.map(async user =>{
+                if(!userId.equals(user._id)){
+                    const newNotifAdd = {
+                        notifType: "booked_ticket",
+                        content: `đã chốt được ${countBooked} trong tour ${findTour.tourname}`,
+                        sendUser: userId,
+                        tourId: findTour._id,
+                        receviceUser : user._id
+                    }
+                    const addNewNotif = await NotificationModel.createNew(newNotifAdd)
+                    if(!addNewNotif){
+                        return reject("Chỉnh sửa thêm user thất bại")
+                    }
+                    return addNewNotif
+                }
+            })
+            await Promise.all(pushNotifBookedTicket)
+        }
         return resolve({count: findTour.tourBookedCount,bookedId: newBookedTour._id,tourId: findTour._id})
     })
 }
@@ -84,6 +133,26 @@ let updateTour = item =>{
             return reject("cập nhật thông tin tour thất bại")
         }else{
             const findTour = await TourModel.findTourById(item._id)
+            if(findTour.users.length > 0){
+                const pushNotifEditAddUser = findTour.users.map(async user =>{
+                    const checkNotifUser = await NotificationModel.findByIdAndType(user._id,findTour._id)
+                    if(!checkNotifUser){
+                        const newNotifAdd = {
+                            notifType: "add_user",
+                            content: "đã thêm bạn vào một tour mới",
+                            sendUser: findTour.admin,
+                            tourId: findTour._id,
+                            receviceUser : user._id
+                        }
+                    const addNewNotif = await NotificationModel.createNew(newNotifAdd)
+                    if(!addNewNotif){
+                        return reject("Chỉnh sửa thêm user thất bại")
+                    }
+                    return addNewNotif
+                    }
+                })
+                await Promise.all(pushNotifEditAddUser)
+            }
             return resolve(findTour)
         }
     })

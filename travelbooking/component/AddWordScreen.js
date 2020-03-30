@@ -98,7 +98,13 @@ const AddWordScreen = ({navigation}) =>{
             </TouchableOpacity>
         )
     }
-
+    const _renderEmtyTour = () =>{
+        return(
+            <View style={{flex: 1,justifyContent:"center",alignItems:'center'}}>
+                <Text style={{fontSize: 18,color:"grey"}}>Bạn chưa có Tour nào.!</Text>
+            </View>
+        )
+    }
     const _renderListTour = () =>{
         return(
             <FlatList 
@@ -107,6 +113,7 @@ const AddWordScreen = ({navigation}) =>{
                 showsVerticalScrollIndicator={false}
                 keyExtractor={(item,index) => `${index}`}
                 renderItem = {(item) => _renderItem(item)}
+                ListEmptyComponent={() => _renderEmtyTour()}
             />
         )
     }
