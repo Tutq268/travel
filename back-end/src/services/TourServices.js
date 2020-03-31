@@ -2,13 +2,15 @@ import UserModel from './../model/UserModel'
 import TourModel from './../model/TourModel'
 import BookedModel from './../model/BookedModel'
 import NotificationModel from './../model/NotificationModel'
-let getAllUser = () =>{
+import HoldModel from './../model/HoldModel'
+let getAllUser = (userId) =>{
     return new Promise(async (resolve,reject) =>{
         const getUser = await UserModel.findAllUser()
         if(!getUser){
             return reject("Lấy user thất bại")
         }else{
-            return resolve(getUser)
+         const filterUser = getUser.filter(user => !user._id.equals(userId))
+            return resolve(filterUser)
         }
     })
 }
@@ -106,6 +108,68 @@ let updateBookTour = (tourId,countBooked,userId) =>{
     })
 }
 
+const updateHoldTour = (tourId,count,userId) =>{
+    return new Promise(async (resolve,reject) =>{
+        const findTour = await TourModel.findTourById(tourId)
+        if(!findTour){
+            return reject("Không tìm thấy tour")
+        }
+        if(findTour.tourBookedCount + count > findTour.ticketCount){
+            return reject("Không còn chỗ để giữ vé")
+        }
+        const itemHoldTour = {
+            user :userId,
+            tour: tourId,
+            count: count
+        }
+        const createNewHoldTour = await HoldModel.addNewHold(itemHoldTour)
+        if(!createNewHoldTour){
+            return reject("Giữ vé thất bại")
+        }
+        findTour.tourHold = findTour.tourHold.concat(createNewHoldTour._id)
+        findTour.save()
+        if(!userId.equals(findTour.admin)){
+            const newNotifAdd = {
+                notifType: "hold_ticket",
+                content: `đã giữ ${count} chỗ trong tour ${findTour.tourname}`,
+                sendUser: userId,
+                tourId: findTour._id,
+                receviceUser : findTour.admin
+            }
+            await NotificationModel.createNew(newNotifAdd)
+        }
+        if(findTour.users.length > 0){
+            const pushNotifHoldTicket = findTour.users.map(async user =>{
+                if(!userId.equals(user._id)){
+                    const newNotifAdd = {
+                        notifType: "hold_ticket",
+                        content: `đã giữ ${count} chỗ trong tour ${findTour.tourname}`,
+                        sendUser: userId,
+                        tourId: findTour._id,
+                        receviceUser : user._id
+                    }
+                    const addNewNotif = await NotificationModel.createNew(newNotifAdd)
+                    if(!addNewNotif){
+                        return reject("Chỉnh sửa thêm user thất bại")
+                    }
+                    return addNewNotif
+                }
+            })
+            await Promise.all(pushNotifHoldTicket)
+        }
+        return resolve("giữ chỗ thành công")
+
+    })
+}
+let getInfoHold = holdId =>{
+    return new Promise(async (resolve,reject)=>{
+        const getHoldInfo = await HoldModel.getHold(holdId)
+        if(!holdId){
+            return reject("get hold tour failed")
+        }
+        return resolve(getHoldInfo)
+    })
+}
 let getTourInfo = (tourId) =>{
     return new Promise(async (resolve,reject) =>{
         const findTour = await TourModel.findTourByIdAndPopulate(tourId)
@@ -176,5 +240,7 @@ module.exports = {
     getTourInfo:getTourInfo,
     getMyInfo:getMyInfo,
     updateTour:updateTour,
-    updateStartTour:updateStartTour
+    updateStartTour:updateStartTour,
+    updateHoldTour:updateHoldTour,
+    getInfoHold:getInfoHold
 }

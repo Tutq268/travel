@@ -20,7 +20,7 @@ let getListTour = async (req,res) =>{
 
 let getAllUser = async (req,res) =>{
     try{
-        const getAllUser = await tour.getAllUser()
+        const getAllUser = await tour.getAllUser(req.user._id)
         return res.json({
             result: "ok",
             message: "get user success",
@@ -67,6 +67,25 @@ let addBookedTour = async (req,res) =>{
             result: "failed",
             message: error,
             data:null
+        })
+    }
+}
+
+let addHoldTour = async (req,res)=>{
+    try {
+        const {tourId,countHold} = req.body
+        const updateHold = await tour.updateHoldTour(tourId,+countHold,req.user._id)
+        return res.json({
+            result: "ok",
+            message: "thanh cong",
+            data: updateHold
+        })
+        
+    } catch (error) {
+        return res.json({
+            result: "failed",
+            message:error,
+            data: null
         })
     }
 }
@@ -149,6 +168,24 @@ let setStarTour = async (req,res)=>{
         })
     }
 }
+
+let getHoldTour = async (req,res) =>{
+    try {
+        const holdId = req.params.holdId
+        const getInfoHold = await tour.getInfoHold(holdId)
+        return res.json({
+            result: "ok",
+            message: "success",
+            data: getInfoHold
+        })
+    } catch (error) {
+        return res.json({
+            result: "failed",
+            message: error,
+            data: null
+        })
+    }
+}
 module.exports ={
     getListTour : getListTour,
     getAllUser: getAllUser,
@@ -158,5 +195,7 @@ module.exports ={
     getMyInfo:getMyInfo,
     logout:logout,
     editTourInfo:editTourInfo,
-    setStarTour:setStarTour
+    setStarTour:setStarTour,
+    addHoldTour:addHoldTour,
+    getHoldTour:getHoldTour
 }

@@ -64,6 +64,14 @@ API.bookedTour = count => {
     return API.instance.post("/tour/booked-tour",param)
 }
 
+API.holdTour = param =>{
+    return API.instance.post("/tour/hold-tour",param)
+}
+
+API.getHoldTour = holdTourId =>{
+    return API.instance.get(`/tour/get-hold-tour/${holdTourId}`)
+}
+
 API.getTourDetail = tourId =>{
     return API.instance.get(`/tour/tour-detail/${tourId}`)
 }

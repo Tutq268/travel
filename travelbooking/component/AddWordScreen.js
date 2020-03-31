@@ -11,6 +11,7 @@ import {getListTour,clearAddUser,updateBookedTour,addUser} from './../action/Tou
 import { useDispatch,useSelector } from 'react-redux'
 import AsyncStorage from '@react-native-community/async-storage'
 import API from '../services/API'
+import HoldDetail from './HoldDetail'
 
 
 const {width,height} = Dimensions.get("window")
@@ -18,6 +19,7 @@ const AddWordScreen = ({navigation}) =>{
     const [openHoldTicketDialog,setOpenHoldTicketDialog] = useState(false)
     const [openBookTicketDialog,setOpenBookTicketDialog] = useState(false)
     const [ticketBook,setTicketBook] = useState("")
+    const [ticketHold,setTicketHold] = useState("")
     const [tourChoose,setTourChoose] = useState()
     const [isRefreshing,setRefreshing] = useState(false)
     const [userId,setUserId] = useState()
@@ -68,7 +70,27 @@ const AddWordScreen = ({navigation}) =>{
             console.log(err)
         })
     }
-
+    const _renderItemHold = (item) =>{
+        const data = item.item
+        return(
+            <View key={item.index}>
+                <HoldDetail holdId={data} userId={userId}/>
+            </View>
+        )
+    }
+    const _renderHoldTour = (data) =>{
+        return(
+            <View style={{marginTop: 10}}>
+        
+                 <FlatList 
+                    data={data}
+                    keyExtractor ={(item,index) => `${index}`}
+                    showsVerticalScrollIndicator={false}
+                    renderItem={(item,index) => _renderItemHold(item)}
+                 />
+             </View>
+        )
+    }
     const _renderItem = item =>{
         const data = item.item
         return(
@@ -106,6 +128,8 @@ const AddWordScreen = ({navigation}) =>{
                            <MenuOption style={{padding: 10,alignItems: 'center'}}
                                 onSelect={() => {
                                     setOpenHoldTicketDialog(true)
+                                    setTourChoose(data)
+                                    setTicketHold("")
                                 }}
                             >
                               <Text style={{fontSize: 18,fontWeight: '500'}}>Giữ Vé</Text>
@@ -145,11 +169,12 @@ const AddWordScreen = ({navigation}) =>{
                         <Text style={{fontSize: 16,fontWeight: '500'}}>{numeral(data.ticketPrice).format('0,0')} vnđ</Text>
                     </View>
                     <View style={{flexDirection: 'row'}}>
-                         <Text style={{fontSize: 16,marginRight: 10,fontWeight: '500',color: "red"}}>Khởi Hành:</Text>
+                         <Text style={{fontSize: 16,marginRight: 10,fontWeight: '500'}}>Khởi Hành:</Text>
                         <Text style={{fontSize: 16,fontWeight: '500'}}>{moment(data.departureDate).format("DD/MM/YYYY")}</Text>
 
                     </View>
                 </View>
+                {data.tourHold.length > 0 && _renderHoldTour(data.tourHold)}
             </TouchableOpacity>
         )
     }
@@ -195,6 +220,7 @@ const AddWordScreen = ({navigation}) =>{
         )
     }
 
+   
     const _renderHoldTicketDialog = () =>{
         return (
             <Dialog.Container visible={openHoldTicketDialog}>
@@ -203,12 +229,49 @@ const AddWordScreen = ({navigation}) =>{
                         style={{borderColor: "#ccc",paddingHorizontal: 16,marginBottom: 16,fontSize:18}}
                         placeholder="Số vé muốn giữ"
                         autoFocus={true}
+                        value={ticketHold}
+                        onChangeText={text => setTicketHold(text)}
                         keyboardType="numeric"
                     />
             <Dialog.Button style={{color: 'red'}} label="Cancel" onPress={() => setOpenHoldTicketDialog(false)} />
-            <Dialog.Button label="Confirm" onPress={() => setOpenHoldTicketDialog(false)}/>
+            <Dialog.Button label="Confirm" onPress={() => hanleHoldTicket()}/>
         </Dialog.Container>
         )
+    }
+    const hanleHoldTicket = () =>{
+        if(!tourChoose){
+            setOpenHoldTicketDialog(false)
+            setTicketHold("")
+            return
+        }
+        if(ticketHold === "" || +ticketHold < 0){
+            setOpenHoldTicketDialog(false)
+            setTicketHold("")
+            return
+        }
+        if(+ticketHold + tourChoose.tourBookedCount > tourChoose.ticketCount){
+            alert("Không còn đủ chỗ để giữ")
+            setTicketHold("")
+            return
+        }
+        const data = {
+            tourId: tourChoose._id,
+            countHold: ticketHold
+        }
+        API.holdTour(data).then(res =>{
+            const data = res.data
+            if(data.result === "ok"){
+                setOpenHoldTicketDialog(false)
+                // alert(data.message)
+            }
+            else{
+                setOpenHoldTicketDialog(false)
+                // alert(data.message)
+            }
+        }).catch(err =>{
+            console.log(err)
+        })
+
     }
 
     const handleTicketBook = () =>{
@@ -229,7 +292,7 @@ const AddWordScreen = ({navigation}) =>{
         }
         const data = {
             tourId: tourChoose._id,
-            countBooked: ticketBook
+            countBooked: +ticketBook
         }
         setOpenBookTicketDialog(false)
         dispatch(updateBookedTour(data))

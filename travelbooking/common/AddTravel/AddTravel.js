@@ -1,5 +1,5 @@
 import React,{useState,useEffect} from 'react'
-import {View,Text,StyleSheet,SafeAreaView,TouchableOpacity,TextInput,Dimensions,ActivityIndicator} from 'react-native'
+import {View,Text,StyleSheet,SafeAreaView,TouchableOpacity,TextInput,Dimensions,ActivityIndicator, ScrollView} from 'react-native'
 import {Picker} from 'native-base'
 import { useSelector,useDispatch } from 'react-redux'
 import Icon from 'react-native-vector-icons/Ionicons'
@@ -9,10 +9,11 @@ import numeral from 'numeral'
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Modal from 'react-native-modalbox'
 import * as ScreenName from './../../constant/ScreenName'
-import {removeUser,addNewTour,editTour,clearAddUser} from './../../action/TourAction'
+import {removeUser,addNewTour,editTour,clearAddUser,getListUserSuccess, addUser} from './../../action/TourAction'
 import AsyncStorage from '@react-native-community/async-storage'
 import API from './../../services/API'
 import _ from 'lodash'
+import async from 'async';
 
 const {width,height} = Dimensions.get("window")
 const AddTravel = ({navigation}) =>{
@@ -23,6 +24,7 @@ const AddTravel = ({navigation}) =>{
     const [ticketCount,setTicketCount] = useState()
     const [ticketPrice,setTicketPrice] = useState()
     const [tourTime,setTourTime] = useState("")
+    const [note,setNote] = useState("")
     const [departureDate,setDepartureDate] = useState()
     const [users,setUsers] = useState([])
     const [errAddTour,setErrAddTour] = useState([])
@@ -44,6 +46,7 @@ const AddTravel = ({navigation}) =>{
             const userId = await AsyncStorage.getItem("userId")
             setUserId(userId)
         }
+      
         getUserId()
     },[])
     useEffect(() =>{
@@ -53,7 +56,17 @@ const AddTravel = ({navigation}) =>{
     useEffect(() =>{
        const dataTour = navigation.getParam("TOUR_ITEM")
        setDataTour(dataTour)
-       if(dataTour === "add") return
+       if(dataTour === "add"){
+        const getListUser = async () =>{
+            const res = await API.getListUser()
+            const data = res.data
+            if(data.result === "ok"){
+                dispatch(addUser(data.data))
+                setUsers(data.data)
+            }
+        }
+        getListUser()
+       }
        else{
             setTourName(dataTour.tourname)
             setTourTrip(dataTour.tourtrip)
@@ -62,6 +75,7 @@ const AddTravel = ({navigation}) =>{
             setTourTime(dataTour.tourTime)
             setDepartureDate(dataTour.departureDate)
             setSelectAirlines(dataTour.airlines)
+            setNote(dataTour.note)
             setUsers(dataTour.users)
        }
     },[])
@@ -91,11 +105,12 @@ const AddTravel = ({navigation}) =>{
             tourtrip : tourTrip,
             ticketCount : ticketCount,
             admin: userId,
-            ticketPrice : ticketPrice,
+            ticketPrice : ticketPrice.split(",").join(""),
             tourTime : tourTime,
             departureDate:departureDate,
             users: usersId,
-            airlines: selectAirlines
+            airlines: selectAirlines,
+            note: note
            }
            setLoading(true)
            API.addNewTour(dataNewTour).then(res =>{
@@ -137,7 +152,7 @@ const AddTravel = ({navigation}) =>{
                 alert("Giá vé phải lớn hơn 0 vnđ")
                 return
             }
-            editData.ticketPrice = ticketPrice
+            editData.ticketPrice =ticketPrice.split(",").join("")
         }
         if(tourTime !== dataTour.tourTime){
             editData.tourTime = tourTime
@@ -156,6 +171,9 @@ const AddTravel = ({navigation}) =>{
                 })
             }
             editData.users = usersId
+        }
+        if(note !== dataTour.note){
+            editData.note = note
         }
         if(_.isEmpty(editData)){
             alert("Bạn Chưa Thay Đổi Gì Hết")
@@ -203,7 +221,7 @@ const AddTravel = ({navigation}) =>{
                 <ActivityIndicator size="large" color="red" />
                 :
                 <TouchableOpacity 
-                    activeOpacity={0.5} style={{alignItems:"center",backgroundColor: '#4EC1E2',width: width -64}}
+                    activeOpacity={0.5} style={{alignItems:"center",backgroundColor: '#4EC1E2',marginHorizontal: 32}}
                     onPress ={() =>dataTour === "add" ? _handleAddNewTour() : _handleEditTour() }
                     >
                     <Text style={{marginVertical: 12,marginHorizontal: 16,fontSize: 20,color:'white',fontWeight:'600'}}>
@@ -213,6 +231,9 @@ const AddTravel = ({navigation}) =>{
                 }
             </View>
         )
+    }
+    const removeUserTour = userId =>{
+        dispatch(removeUser(userId))
     }
 
     const _renderFormAddTravel = () =>{
@@ -277,7 +298,15 @@ const AddTravel = ({navigation}) =>{
                     </TouchableOpacity>
                   {departureDate && <Text style={{fontSize: 18,color: 'grey',marginLeft: 16}}>{moment(departureDate).format("DD/MM/YYYY")}</Text> }
                 </View>
-
+                <View style={{paddingVertical: 16,flexDirection: 'row'}}>
+                    <Text style={{fontSize: 18,color: 'grey',marginRight: 16}}>Note : </Text>
+                    <TextInput
+                        style={{borderBottomWidth: StyleSheet.hairlineWidth,borderBottomColor: '#ccc',fontSize: 16,flex :1}}
+                        defaultValue={note}
+                        multiline
+                        onChangeText={text => setNote(text)}
+                    />
+                </View>
                 <View style={{paddingBottom: 16,flexDirection: 'row',alignItems:'center'}}>
                     <Text style={{fontSize: 18,color:errAddTour.includes("selectAirlines")? "red" : 'grey',marginTop: 16}}>Hãng Hàng Không : <Text style={{color: 'red'}}>*</Text></Text>
                     <Picker
@@ -297,6 +326,7 @@ const AddTravel = ({navigation}) =>{
                         <Picker.Item label="Air France" value="Air France" />
                     </Picker>
                 </View>
+                
 
                 <View style={{paddingVertical: 16,flexDirection: 'row'}}>
                     <TouchableOpacity onPress={() => SiteMap.showScreen(navigation,ScreenName.ADD_USER_TO_TOUR)}>
@@ -315,7 +345,7 @@ const AddTravel = ({navigation}) =>{
                                     <TouchableOpacity 
                                         activeOpacity={0.6}
                                          style={styles.removeAddUser}
-                                         onPress={() => dispatch(removeUser(user._id))}
+                                         onPress={() => removeUserTour(user._id)}
                                          >
                                         <Icon 
                                         name="ios-close-circle"
@@ -329,6 +359,7 @@ const AddTravel = ({navigation}) =>{
                         })}
                     </View>}
                 </View>
+                
                 {_renderAddNewTourButton()}
             </View>
         )
@@ -372,9 +403,11 @@ const AddTravel = ({navigation}) =>{
     }
     return(
          <SafeAreaView style={styles.container}>
-            {dataTour && _renderHeader()}
-            {dataTour && _renderFormAddTravel()}
-            {_renderModalAddTimeTour()}
+             <ScrollView showsVerticalScrollIndicator={false}>
+                {dataTour && _renderHeader()}
+                {dataTour && _renderFormAddTravel()}
+                {_renderModalAddTimeTour()}
+             </ScrollView>
         </SafeAreaView>
     )
 }
@@ -403,11 +436,8 @@ const styles = StyleSheet.create({
         top: -10
     },
     addNewTourButton: {
-        position: 'absolute',
-        bottom: 16,
-        zIndex: 99,
-        width: width,
-        alignItems: 'center',
+        marginTop: 32,
+        justifyContent:'center'
     },
     modalAddTimer:{
         height: 400,
