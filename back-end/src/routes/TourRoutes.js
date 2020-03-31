@@ -12,6 +12,7 @@ let initTourRouter = (app) =>{
     router.get("/get-me",requireAuth,tour.getMyInfo)
     router.get("/logout",requireAuth,tour.logout)
     router.post("/edit-tour",requireAuth,tour.editTourInfo)
+    router.post("/set-star",requireAuth,tour.setStarTour)
     return app.use("/api/tour",router)
 }
 

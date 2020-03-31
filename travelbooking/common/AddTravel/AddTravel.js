@@ -1,10 +1,11 @@
 import React,{useState,useEffect} from 'react'
-import {View,Text,StyleSheet,SafeAreaView,TouchableOpacity,TextInput,Dimensions} from 'react-native'
+import {View,Text,StyleSheet,SafeAreaView,TouchableOpacity,TextInput,Dimensions,ActivityIndicator} from 'react-native'
 import {Picker} from 'native-base'
 import { useSelector,useDispatch } from 'react-redux'
 import Icon from 'react-native-vector-icons/Ionicons'
 import SiteMap from './../SiteMap'
 import moment from 'moment'
+import numeral from 'numeral'
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Modal from 'react-native-modalbox'
 import * as ScreenName from './../../constant/ScreenName'
@@ -31,6 +32,7 @@ const AddTravel = ({navigation}) =>{
     const [addSuccess,setAddSuccess] = useState(false)
     const {userAdd} = useSelector(state => state.tour)
     const dispatch = useDispatch()
+    const [loading,setLoading] = useState(false)
 
     useEffect(() =>{
         if(addSuccess){
@@ -95,13 +97,16 @@ const AddTravel = ({navigation}) =>{
             users: usersId,
             airlines: selectAirlines
            }
+           setLoading(true)
            API.addNewTour(dataNewTour).then(res =>{
                const data = res.data
                if(data.result === "ok"){
                    dispatch(addNewTour(data.data))
                     setAddSuccess(true)
+                    setLoading(false)
                }else{
                    alert(data.message)
+                   setLoading(false)
                }
            }).catch(err =>{
                console.log(err)
@@ -156,14 +161,17 @@ const AddTravel = ({navigation}) =>{
             alert("Bạn Chưa Thay Đổi Gì Hết")
             return
         }else{
+            setLoading(true)
             editData._id = dataTour._id
             API.changTour(editData).then(res =>{
                 const data = res.data
                 if(data.result === "ok"){
                     dispatch(editTour(data.data))
                     dispatch(clearAddUser())
+                    setLoading(false)
                     navigation.goBack()
                 }else{
+                    setLoading(false)
                     alert(data.message)
                 }
             }).catch(err => {
@@ -183,7 +191,7 @@ const AddTravel = ({navigation}) =>{
                     />
                 </TouchableOpacity>
                 <Text style={{fontSize: 20,flex: 1,textAlign:'center'}}>
-                       {dataTour === "add" ? "Add New Tour" : "Edit Tour"}
+                       {dataTour === "add" ? "Thêm tour mới" : "Chỉnh sửa"}
                     </Text>
             </View>
         )
@@ -191,14 +199,18 @@ const AddTravel = ({navigation}) =>{
     const _renderAddNewTourButton = () =>{
         return(
             <View style={styles.addNewTourButton}>
+                {loading ?
+                <ActivityIndicator size="large" color="red" />
+                :
                 <TouchableOpacity 
                     activeOpacity={0.5} style={{alignItems:"center",backgroundColor: '#4EC1E2',width: width -64}}
                     onPress ={() =>dataTour === "add" ? _handleAddNewTour() : _handleEditTour() }
                     >
                     <Text style={{marginVertical: 12,marginHorizontal: 16,fontSize: 20,color:'white',fontWeight:'600'}}>
-                        {dataTour === "add" ? "Add New Tour" : "Edit Tour"}
+                        {dataTour === "add" ? "Thêm tour mới" : "Chỉnh sửa"}
                     </Text>
                 </TouchableOpacity>
+                }
             </View>
         )
     }
@@ -207,7 +219,7 @@ const AddTravel = ({navigation}) =>{
         return(
             <View style={{flex: 1, paddingHorizontal: 16,marginTop: 16}}>
                 <View style={{paddingVertical: 10}}>
-                    <Text style={{fontSize: 18,color: errAddTour.includes("tourName") ? "red" : 'grey'}}>Tour Name : <Text style={{color: 'red'}}>*</Text></Text>
+                    <Text style={{fontSize: 18,color: errAddTour.includes("tourName") ? "red" : 'grey'}}>Tên Tour : <Text style={{color: 'red'}}>*</Text></Text>
                     <TextInput
                         style={{paddingVertical: 8,borderBottomWidth: StyleSheet.hairlineWidth,borderBottomColor: errAddTour.includes("tourName") ? "red" : '#ccc',fontSize: 16}}
                         defaultValue={tourName}
@@ -215,7 +227,7 @@ const AddTravel = ({navigation}) =>{
                     />
                 </View>
                 <View style={{paddingVertical: 10}}>
-                    <Text style={{fontSize: 18,color: errAddTour.includes("tourTrip") ? "red" : 'grey'}}>Tour Trip : <Text style={{color: 'red'}}>*</Text></Text>
+                    <Text style={{fontSize: 18,color: errAddTour.includes("tourTrip") ? "red" : 'grey'}}>Lịch Trình : <Text style={{color: 'red'}}>*</Text></Text>
                     <TextInput
                         style={{paddingVertical: 8,borderBottomWidth: StyleSheet.hairlineWidth,borderBottomColor: errAddTour.includes("tourTrip") ? "red" : '#ccc',fontSize: 16}}
                         defaultValue={tourTrip}
@@ -223,7 +235,7 @@ const AddTravel = ({navigation}) =>{
                     />
                 </View>
                 <View style={{paddingVertical: 16,flexDirection: 'row'}}>
-                    <Text style={{fontSize: 18,color: errAddTour.includes("ticketCount") ? "red" :  'grey',marginRight: 16,flex: 0.5}}>Ticket Count : <Text style={{color: 'red'}}>*</Text></Text>
+                    <Text style={{fontSize: 18,color: errAddTour.includes("ticketCount") ? "red" :  'grey',marginRight: 16,flex: 0.5}}>Tổng Số Chỗ : <Text style={{color: 'red'}}>*</Text></Text>
                     <TextInput
                         style={{borderBottomWidth: StyleSheet.hairlineWidth,borderBottomColor: errAddTour.includes("ticketCount") ? "red" : '#ccc',fontSize: 16,flex :0.5,textAlign:'center'}}
                         keyboardType="numeric"
@@ -232,16 +244,16 @@ const AddTravel = ({navigation}) =>{
                     />
                 </View>
                 <View style={{paddingVertical: 16,flexDirection: 'row'}}>
-                    <Text style={{fontSize: 18,color:errAddTour.includes("ticketPrice") ? "red" : 'grey',marginRight: 16,flex: 0.5}}>Ticket Price : <Text style={{color: 'red'}}>*</Text></Text>
+                    <Text style={{fontSize: 18,color:errAddTour.includes("ticketPrice") ? "red" : 'grey',marginRight: 16,flex: 0.5}}>Giá Tour : <Text style={{color: 'red'}}>*</Text></Text>
                     <TextInput
                         style={{borderBottomWidth: StyleSheet.hairlineWidth,borderBottomColor: errAddTour.includes("ticketPrice") ? "red" : '#ccc',fontSize: 16,flex: 0.5,textAlign: 'center'}}
                         keyboardType="numeric"
-                        defaultValue={ticketPrice ? `${ticketPrice}` : ""}
+                        defaultValue={ticketPrice ? `${numeral(ticketPrice).format('0,0')}` : ""}
                         onChangeText={text => setTicketPrice(text)}
                     />
                 </View>
                 <View style={{paddingVertical: 16,flexDirection: 'row'}}>
-                    <Text style={{fontSize: 18,color: errAddTour.includes("tourTime") ? "red" : 'grey',marginRight: 16,flex: 0.3}}>Tour time : <Text style={{color: 'red'}}>*</Text></Text>
+                    <Text style={{fontSize: 18,color: errAddTour.includes("tourTime") ? "red" : 'grey',marginRight: 16,flex: 0.3}}>Thời Gian : <Text style={{color: 'red'}}>*</Text></Text>
                     <TextInput
                         style={{borderBottomWidth: StyleSheet.hairlineWidth,borderBottomColor: errAddTour.includes("tourTime") ? "red" :  '#ccc',textAlign:'center',fontSize: 16,flex: 0.6}}
                         defaultValue={tourTime}
@@ -252,7 +264,7 @@ const AddTravel = ({navigation}) =>{
                 </View>
 
                 <View style={{paddingVertical: 16,flexDirection: 'row',alignItems:'center'}}>
-                    <Text style={{fontSize: 18,color:errAddTour.includes("departureDate") ? "red" : 'grey',marginRight: 16}}>Departure date : <Text style={{color: 'red'}}>*</Text></Text>
+                    <Text style={{fontSize: 18,color:errAddTour.includes("departureDate") ? "red" : 'grey',marginRight: 16}}>Ngày Khởi Hành : <Text style={{color: 'red'}}>*</Text></Text>
                    <TouchableOpacity 
                     style={{justifyContent:"flex-end"}}
                     onPress={() => setOpenModal(true)}
@@ -267,7 +279,7 @@ const AddTravel = ({navigation}) =>{
                 </View>
 
                 <View style={{paddingBottom: 16,flexDirection: 'row',alignItems:'center'}}>
-                    <Text style={{fontSize: 18,color:errAddTour.includes("selectAirlines")? "red" : 'grey',marginTop: 16}}>Airlines : <Text style={{color: 'red'}}>*</Text></Text>
+                    <Text style={{fontSize: 18,color:errAddTour.includes("selectAirlines")? "red" : 'grey',marginTop: 16}}>Hãng Hàng Không : <Text style={{color: 'red'}}>*</Text></Text>
                     <Picker
                         mode="dropdown"
                         iosHeader="Select Airlines"
@@ -290,7 +302,7 @@ const AddTravel = ({navigation}) =>{
                     <TouchableOpacity onPress={() => SiteMap.showScreen(navigation,ScreenName.ADD_USER_TO_TOUR)}>
                         <Icon 
                             name="ios-person-add"
-                            size={30}
+                            size={36}
                             color="#ccc"
                         />
                     </TouchableOpacity>

@@ -7,25 +7,36 @@ import SiteMap from './../common/SiteMap'
 
 const NotificationScreen = ({navigation}) =>{
     const [notifData,setNotiData] = useState()
-    useEffect(() =>{
-        const fetchData = async () =>{
-            const res = await API.getAllNotification()
-            const data = res.data
-            if(data.result === "ok"){
-                setNotiData(data.data)
-            }else{
-                alert(data.message)
-            }
+
+    const fetchData = async () =>{
+        const res = await API.getAllNotification()
+        const data = res.data
+        if(data.result === "ok"){
+            setNotiData(data.data)
+        }else{
+            alert(data.message)
         }
+    }
+    useEffect(() =>{
         fetchData()
     },[])
+
+    useEffect(() => {
+        const navFocusListener = navigation.addListener('willFocus', () => {    
+            fetchData()
+        });
+        return () => {
+            navFocusListener.remove();
+        };
+    }, []);
+
 
     const showNotifData = data =>{
         if(!data.isRead){
             API.readNotification(data._id).then(res=>{
                 const data = res.data
                 if(data.result === "ok"){
-                    navigation.navigate("TOUR_DETAIL",{tourId: data.tourId})
+                    navigation.navigate("NotifTourDetail",{tourId: data.tourId})
                 }
                 else{
                    alert(data.message)
@@ -34,7 +45,7 @@ const NotificationScreen = ({navigation}) =>{
                 console.log(err)
             })
         }else{
-            navigation.navigate("TOUR_DETAIL",{tourId: data.tourId})
+            navigation.navigate("NotifTourDetail",{tourId: data.tourId})
         }
     }
 
@@ -54,7 +65,13 @@ const NotificationScreen = ({navigation}) =>{
             </TouchableOpacity>
         )
     }
-
+    const _renderEmtyNotif = () =>{
+        return(
+            <View style={{flex: 1,justifyContent:"center",alignItems:'center'}}>
+                <Text style={{fontSize: 18,color:"grey"}}>Bạn chưa có thông báo.!</Text>
+            </View>
+        )
+    }
     const _renderNotifData = () =>{
         return(
             <FlatList 
@@ -62,6 +79,7 @@ const NotificationScreen = ({navigation}) =>{
             data={notifData}
             keyExtractor={(item,index) => `${index}`}
             renderItem = {(item) => _renderItemNotif(item)}
+            ListEmptyComponent={() => _renderEmtyNotif()}
            />
         )
     }

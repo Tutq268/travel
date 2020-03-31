@@ -2,6 +2,8 @@ import React,{useEffect,useState} from 'react'
 import { View,Text,StyleSheet,TouchableOpacity,FlatList } from 'react-native'
 import API from './../services/API'
 import moment from 'moment'
+import numeral from 'numeral'
+
 
 const TourDetail = ({navigation}) =>{
     const [tourDetail,setTourDetail] = useState(null)
@@ -54,11 +56,11 @@ const TourDetail = ({navigation}) =>{
     const _renderTourBooked = (tourBooked) =>{
         return(
             <View style={{marginTop: 16,borderTopColor: 'grey',borderTopWidth: 1,paddingTop: 16,flex:1}}>
-                <Text style={{textAlign: "center",fontSize: 20,fontWeight: '500',color: "red"}}>List Ticket Booked</Text>
+                <Text style={{textAlign: "center",fontSize: 20,fontWeight: '500',color: "red"}}>Danh Sách Vé Đã Đặt</Text>
                 <View style={{padding: 8,flexDirection: "row"}}>
                     <Text style={{flex: 0.2,fontSize: 18,textAlign:'center'}}>STT</Text>
-                    <Text style={{flex: 0.5,fontSize: 18,textAlign:'center'}}>Username</Text>
-                    <Text style={{flex: 0.3,fontSize: 18}}>Ticket Count</Text>
+                    <Text style={{flex: 0.5,fontSize: 18,textAlign:'center'}}>Người Bán</Text>
+                    <Text style={{flex: 0.3,fontSize: 18,textAlign: 'center'}}>Số Vé</Text>
                 </View>
                 <FlatList 
                 data={tourBooked}
@@ -73,40 +75,40 @@ const TourDetail = ({navigation}) =>{
         return(
             <View style={{flex:1}}>
                 <View style={{flexDirection: 'row'}}>
-                    <Text style={{fontSize: 18}}>Tour name : </Text>
+                    <Text style={{fontSize: 18}}>Tên Tour : </Text>
                     <Text style={styles.textDetail}>{tourDetail.tourname}</Text>
                 </View>
                 <View style={{flexDirection: 'row',marginTop: 16}}>
-                    <Text style={{fontSize: 18}}>Tour trip : </Text>
+                    <Text style={{fontSize: 18}}>Lịch Trình : </Text>
                     <Text style={styles.textDetail}>{tourDetail.tourtrip}</Text>
                 </View>
                 <View style={{flexDirection: 'row',marginTop: 16}}>
-                    <Text style={{fontSize: 18}}> Tour Ticket Count :  </Text>
+                    <Text style={{fontSize: 18}}> Tổng Số Chỗ :  </Text>
                     <Text style={styles.textDetail}>{tourDetail.ticketCount}</Text>
                 </View>
 
                 <View style={{flexDirection: 'row',marginTop: 16}}>
-                    <Text style={{fontSize: 18}}> Tour Ticket Booked :  </Text>
+                    <Text style={{fontSize: 18}}> Số Chỗ Đã Đặt :  </Text>
                     <Text style={styles.textDetail}>{tourDetail.tourBookedCount}</Text>
                 </View>
 
                 <View style={{flexDirection: 'row',marginTop: 16}}>
-                    <Text style={{fontSize: 18}}>Tour Ticket Price :  </Text>
-                    <Text style={styles.textDetail}>{tourDetail.ticketPrice}</Text>
+                    <Text style={{fontSize: 18}}>Giá Tour :  </Text>
+                    <Text style={styles.textDetail}>{numeral(tourDetail.ticketPrice).format('0,0')}</Text>
                 </View>
 
                 <View style={{flexDirection: 'row',marginTop: 16}}>
-                    <Text style={{fontSize: 18}}>Tour time :  </Text>
+                    <Text style={{fontSize: 18}}>Thời Gian :  </Text>
                     <Text style={styles.textDetail}>{tourDetail.tourTime}</Text>
                 </View>
 
                 <View style={{flexDirection: 'row',marginTop: 16}}>
-                    <Text style={{fontSize: 18}}>Departure date :</Text>
+                    <Text style={{fontSize: 18}}>Ngày Khởi Hành :</Text>
                     <Text style={styles.textDetail}>{moment(tourDetail.departureDate).format("DD/MM/YYYY")}</Text>
                 </View>
 
                 <View style={{flexDirection: 'row',marginTop: 16}}>
-                    <Text style={{fontSize: 18}}>Airlines :</Text>
+                    <Text style={{fontSize: 18}}>Hãng Hàng Không :</Text>
                     <Text style={styles.textDetail}>{tourDetail.airlines}</Text>
                 </View>
                 {tourDetail.users.length > 0 && _renderUserAdded(tourDetail.users)}
@@ -138,7 +140,7 @@ const styles = StyleSheet.create({
 })
 
 TourDetail.navigationOptions = () =>({
-    title: "Tour Detail"
+    title: "Thông Tin Tour"
 })
 
 export default TourDetail

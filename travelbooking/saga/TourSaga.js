@@ -8,7 +8,11 @@ function* listTour(){
     const res = yield API.getListTour()
     const data = res.data
     if(data.result === "ok"){
-        yield put(getListTourSuccess(_.reverse(data.data)))
+
+        const sortTour = data.data.sort((a,b) =>{
+            return b.isStar - a.isStar
+        })
+        yield put(getListTourSuccess(sortTour))
     }else{
         alert(data.message)
     }

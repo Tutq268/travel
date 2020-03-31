@@ -132,6 +132,23 @@ let editTourInfo = async (req,res)=>{
         })
     }
 }
+
+let setStarTour = async (req,res)=>{
+    try {
+        const updateStart = await tour.updateStartTour(req.body)
+        return res.json({
+            result: "ok",
+            message:updateStart,
+            data: null
+        })
+    } catch (error) {
+        return res.json({
+            result: "failed",
+            message:error,
+            data: null
+        })
+    }
+}
 module.exports ={
     getListTour : getListTour,
     getAllUser: getAllUser,
@@ -140,5 +157,6 @@ module.exports ={
     getTourDetail:getTourDetail,
     getMyInfo:getMyInfo,
     logout:logout,
-    editTourInfo:editTourInfo
+    editTourInfo:editTourInfo,
+    setStarTour:setStarTour
 }

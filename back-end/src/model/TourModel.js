@@ -11,6 +11,7 @@ const TourSchema = new Schema({
     tourBookedCount: {type: Number,default:0},
     tourBooked: [{type: Schema.Types.ObjectId,ref: "Booked"}],
     ticketPrice: {type: Number,default: 0},
+    isStar: {type: Boolean,default: false},
     tourTime: {type: String,default: ""},
     departureDate: {type: Number,default: null},
     airlines: {type: String,default: ""},
@@ -29,7 +30,7 @@ TourSchema.statics ={
                     {"admin" : userId},
                     {"users" : {$in :[userId]}}
                 ]
-            }).populate({path: "users",select: "-password"}).exec()
+            }).sort({createAt: -1,isStar: -1}).populate({path: "users",select: "-password"}).exec()
     },
     updateBookedTour(tourId,count){
         return this.findByIdAndUpdate(tourId,{tourBooked: count})

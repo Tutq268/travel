@@ -52,7 +52,8 @@ AddWord.navigationOptions = ({navigation}) =>{
 }
 
 const Notification = createStackNavigator({
-    Notification: NotificationScreen
+    Notification: NotificationScreen,
+    NotifTourDetail: TourDetail
 })
 
 Notification.navigationOptions = ({navigation}) =>{

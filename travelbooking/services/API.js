@@ -90,4 +90,9 @@ API.readNotification = (notifId) =>{
     return API.instance.put(`/notification/read/${notifId}`)
 }
 
+API.setStar = param =>{
+    return API.instance.post("/tour/set-star",param)
+}
+
+
 export default API

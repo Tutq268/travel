@@ -19,7 +19,7 @@ const TourReducer = (state = initialState,action) =>{
             if(!state.listTour){
                 return {...state,listTour: [action.payload]}
             }else{
-                return {...state,listTour: state.listTour.concat(action.payload)}
+                return {...state,listTour: [action.payload].concat(state.listTour)}
             }
         
         case tour.EDIT_TOUR:

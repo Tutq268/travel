@@ -12,24 +12,32 @@ const ManagerScreen = ({navigation}) =>{
     const [phoneEdit,setPhoneEdit] = useState("")
     const [emailEdit,setEmailEdit] = useState("")
     const [addressEdit,setAddressEdit] = useState("")
-    useEffect(() =>{
-        const fetchData = async () =>{
-            const res = await API.getMe()
-            const data = res.data
-            if(data.result === "ok"){
-                setMyInfo(data.data)
-                setUsernameEdit(data.data.username)
-                setPhoneEdit(data.data.phone)
-                setAddressEdit(data.data.address)
-                setEmailEdit(data.data.email)
-            }else{
-                alert(data.message)
-            }
+    const fetchData = async () =>{
+        const res = await API.getMe()
+        const data = res.data
+        if(data.result === "ok"){
+            setMyInfo(data.data)
+            setUsernameEdit(data.data.username)
+            setPhoneEdit(data.data.phone)
+            setAddressEdit(data.data.address)
+            setEmailEdit(data.data.email)
+        }else{
+            alert(data.message)
         }
+    }
+    useEffect(() =>{
         fetchData()
     },[])
 
- 
+    useEffect(() => {
+        const navFocusListener = navigation.addListener('willFocus', () => {    
+            fetchData()
+        });
+        return () => {
+            navFocusListener.remove();
+        };
+    }, []);
+
 
     const _handleLogout = async () =>{
         distpatch(logoutAccount())

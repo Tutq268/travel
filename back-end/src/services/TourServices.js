@@ -157,6 +157,17 @@ let updateTour = item =>{
         }
     })
 }
+
+let updateStartTour = data =>{
+    return new Promise(async (resolve,reject)=>{
+        const updateStart = await TourModel.updateTourInfo(data)
+        if(!updateStart){
+            return reject("xét ưu tiên thất bại")
+        }else{
+            return resolve("xét ưu tiên thành công")
+        }
+    })
+}
 module.exports = {
     getAllUser:getAllUser,
     addNewTour:addNewTour,
@@ -164,5 +175,6 @@ module.exports = {
     updateBookTour:updateBookTour,
     getTourInfo:getTourInfo,
     getMyInfo:getMyInfo,
-    updateTour:updateTour
+    updateTour:updateTour,
+    updateStartTour:updateStartTour
 }
