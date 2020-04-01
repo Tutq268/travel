@@ -18,6 +18,7 @@ let initTourRouter = (app) =>{
     router.post("/remove-tour",requireAuth,tour.removeTour)
     router.post("/bookmark-tour",requireAuth,tour.bookmarkTour)
     router.get("/search/:keyword",requireAuth,tour.searchTour)
+    router.post("/remove-hold",requireAuth,tour.removeHoldTour)
     return app.use("/api/tour",router)
 }
 

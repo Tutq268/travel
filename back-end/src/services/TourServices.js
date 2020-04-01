@@ -69,6 +69,16 @@ let updateBookTour = (tourId,countBooked,userId,holdId) =>{
         if(findTour.tourBookedCount + (+countBooked) > findTour.ticketCount){
             return reject("Số lượng cần đặt quá lớn. không còn đủ chỗ")
         }
+        if(findTour.tourBookedCount + (+countBooked) === findTour.ticketCount){
+            if(findTour.tourHold.length >0){
+                const removeAllHold = findTour.tourHold.map(async tour =>{
+                    return await HoldModel.removeHold(tour._id)
+                })
+                await Promise.all(removeAllHold)
+                findTour.tourHold = []
+                findTour.save()
+            }
+        }
         if(!findTour){
             return reject("Không tìm tháy tour. Vui lòng thử lại")
         }
@@ -252,6 +262,21 @@ let findTourSearch = (keyword,userId) =>{
     })
 }
 
+let removeHold = (tourId,holdId) =>{
+    return new Promise(async (resolve,reject) =>{
+        const findTour = await TourModel.findTourById(tourId)
+        if(!findTour){
+            return reject("Không tìm thấy tour này")
+        }
+        await HoldModel.removeHold(holdId)
+        const filterHoldInTour = findTour.tourHold.filter(tourHoldId => !tourHoldId.equals(holdId))
+        findTour.tourHold = filterHoldInTour
+        findTour.save()
+        return resolve(findTour.tourHold)
+
+    })
+}
+
 module.exports = {
     getAllUser:getAllUser,
     addNewTour:addNewTour,
@@ -263,5 +288,6 @@ module.exports = {
     updateStartTour:updateStartTour,
     updateHoldTour:updateHoldTour,
     getInfoHold:getInfoHold,
-    findTourSearch:findTourSearch
+    findTourSearch:findTourSearch,
+    removeHold:removeHold
 }

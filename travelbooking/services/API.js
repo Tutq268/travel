@@ -114,4 +114,13 @@ API.getTourSearch = keyword =>{
     return API.instance.get(`/tour/search/${keyword}`)
 }
 
+API.removeHoldTour = (holdId,tourId) =>{
+    const param ={
+        holdId,
+        tourId
+    }
+
+    return API.instance.post("/tour/remove-hold",param)
+}
+
 export default API

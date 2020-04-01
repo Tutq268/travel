@@ -1,6 +1,6 @@
 import React,{useEffect,useState} from 'react'
 import { StyleSheet,View,Text,TouchableOpacity,Alert } from 'react-native'
-import {updateBookedTour} from './../action/TourAction'
+import {updateBookedTour,remoteHoldtOUR} from './../action/TourAction'
 import { useDispatch } from 'react-redux'
 import API from './../services/API'
 const HoldDetail = ({holdId,userId,tourId}) =>{
@@ -35,15 +35,38 @@ const HoldDetail = ({holdId,userId,tourId}) =>{
                     ]
                     )
     }
+    const removeTourHold = () =>{
+        API.removeHoldTour(holdId,tourId).then(res =>{
+            const data = res.data
+            if(data.result === "ok"){
+                const dataUpdate = {
+                    tourHold : data.data,
+                    tourId: tourId
+                }
+                dispatch(remoteHoldtOUR(dataUpdate))
+            }else{
+                alert(data.message)
+            }
+        }).catch(err =>{
+            console.log(err)
+        })
+    }
+
     return(
         <>
             {dataHold && 
                 <View style={{flexDirection:"row",alignItems:'center'}}>
                     <Text style={{fontSize: 17,color:'green',marginRight:16}}><Text style={{fontWeight: "600",fontSize: 18}}>{dataHold.user.username}</Text> đang giữ {dataHold.count} vé</Text>
                    {dataHold.user._id === userId &&
-                    <TouchableOpacity onPress={() => bookTour()}>
-                        <Text style={{fontSize: 17,color: 'red'}}>Chốt</Text>
-                   </TouchableOpacity> }
+                   <View style={{flexDirection: 'row'}}>
+                        <TouchableOpacity onPress={() => bookTour()}>
+                            <Text style={{fontSize: 17,color: 'green'}}>Chốt</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => removeTourHold()}>
+                         <Text style={{fontSize: 17,color: 'red',marginLeft: 8}}>Huỷ</Text>
+                        </TouchableOpacity>
+                   </View>
+                     }
                 </View>
             }
         </>

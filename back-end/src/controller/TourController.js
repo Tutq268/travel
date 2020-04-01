@@ -247,6 +247,25 @@ let searchTour = async (req,res)=>{
    
 }
 
+let removeHoldTour = async (req,res) =>{
+    try {
+        const {tourId,holdId} = req.body
+        const removeHold = await tour.removeHold(tourId,holdId)
+        return res.json({
+            result: "ok",
+            message: "success",
+            data: removeHold
+        })
+        
+    } catch (error) {
+        return res.json({
+            result: "failed",
+            message:error,
+            data: null
+        })
+    }
+}
+
 module.exports ={
     getListTour : getListTour,
     getAllUser: getAllUser,
@@ -261,5 +280,6 @@ module.exports ={
     getHoldTour:getHoldTour,
     removeTour:removeTour,
     bookmarkTour:bookmarkTour,
-    searchTour : searchTour
+    searchTour : searchTour,
+    removeHoldTour:removeHoldTour
 }

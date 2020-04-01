@@ -422,7 +422,7 @@ const AddWordScreen = ({navigation}) =>{
 
     return (
         <SafeAreaView style={{flex: 1,backgroundColor:'white'}}>
-            {_renderHeader()}
+            {!isSearch  && _renderHeader()}
             <View style={styles.container}>
             {isSearch ? renderSearchView()
             :

@@ -113,3 +113,10 @@ export const clearListTourSeatch = () =>{
         type: tour.CLEAR_LIST_TOUR_SEARCH
     }
 }
+
+export const remoteHoldtOUR = (data) =>{
+    return {
+        type: tour.REMOVE_HOLD_TOUR,
+        payload: data
+    }
+}

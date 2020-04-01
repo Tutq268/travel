@@ -84,6 +84,21 @@ const TourReducer = (state = initialState,action) =>{
             const tourId = action.payload
             const newTourRemove = state.listTour.filter(tour => tour._id !== tourId)
             return {...state,listTour: newTourRemove}
+        
+        case tour.REMOVE_HOLD_TOUR:
+            const dataHoldRemove = action.payload
+            const newTourAfterRemoveHold = state.listTour.map((tour,index) =>{
+                if(tour._id === dataHoldRemove.tourId){
+                    return {
+                        ...tour,
+                        tourHold: dataHoldRemove.tourHold
+                    }
+                }
+                return tour
+            })
+            return {...state,listTour:newTourAfterRemoveHold}
+
+
         default:
             return state
     }
