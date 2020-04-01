@@ -39,6 +39,27 @@ TourSchema.statics ={
               .populate({path: "users",select: "-password"})
               .exec()
     },
+    findTourByKeyword(keyword,userId){
+        return this.find({
+            $and: [
+                {
+                    $or: [
+                        {"admin" : userId},
+                        {"users" : {$in :[userId]}}
+                    ]
+                },
+                {
+                    $or : [
+                        {"tourname" : {"$regex" : new RegExp(keyword, "i")}},
+                        {"tourtrip" : {"$regex" : new RegExp(keyword, "i")}}
+                        ]
+                }
+                ]})
+                .sort({createAt: -1,isStar: -1})
+                .populate({path: "users",select: "-password"})
+                .exec()
+    },
+
     updateBookedTour(tourId,count){
         return this.findByIdAndUpdate(tourId,{tourBooked: count})
     },
@@ -55,6 +76,9 @@ TourSchema.statics ={
     },
     updateTourInfo(item){
         return this.findByIdAndUpdate(item._id,item).exec()
+    },
+    removeTour(id){
+        return this.findOneAndRemove({_id: id}).exec()
     }
 }
 

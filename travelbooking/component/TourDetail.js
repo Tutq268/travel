@@ -42,7 +42,6 @@ const TourDetail = ({navigation}) =>{
     }
 
     const _renderItem = item =>{
-        console.log(item)
         const data = item.item
                 return (
                     <View key={data._id} style={{padding: 8,flexDirection: "row",borderBottomColor: '#ccc',borderBottomWidth: StyleSheet.hairlineWidth}}>

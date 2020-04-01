@@ -102,5 +102,16 @@ API.setStar = param =>{
     return API.instance.post("/tour/set-star",param)
 }
 
+API.removeTour = tourId =>{
+    return API.instance.post("/tour/remove-tour",{tourId})
+}
+
+API.bookmarkTour = tourId => {
+    return API.instance.post("/tour/bookmark-tour",{tourId})
+}
+
+API.getTourSearch = keyword =>{
+    return API.instance.get(`/tour/search/${keyword}`)
+}
 
 export default API

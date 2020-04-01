@@ -3,7 +3,8 @@ const initialState = {
     listTour: null,
     listUser: null,
     getUserError: null,
-    userAdd : []
+    userAdd : [],
+    listTourSearch : null
 }
 const TourReducer = (state = initialState,action) =>{
     switch(action.type){
@@ -21,6 +22,11 @@ const TourReducer = (state = initialState,action) =>{
             }else{
                 return {...state,listTour: [action.payload].concat(state.listTour)}
             }
+        case tour.GET_LIST_TOUR_SEARCH_SUCCESS:
+            return {...state,listTourSearch: action.payload}
+        
+        case tour.CLEAR_LIST_TOUR_SEARCH:
+            return {...state,listTourSearch: null}
         
         case tour.EDIT_TOUR:
             const dataEdit = action.payload
@@ -55,12 +61,29 @@ const TourReducer = (state = initialState,action) =>{
                     return {
                         ...tour,
                         tourBookedCount: data.count,
-                        tourBooked: tour.tourBooked.concat(data.bookedId)
+                        tourBooked: tour.tourBooked.concat(data.bookedId),
+                        tourHold: data.tourHold
                     }
                 }
                 return tour
             })
             return {...state,listTour: newTourBooked}
+        case tour.UPDATE_HOLD_TOUR_SUCCESS:
+            const datahold = action.payload
+            const newTourHold = state.listTour.map((tour,index) =>{
+                if(tour._id === datahold.tour){
+                    return{
+                        ...tour,
+                        tourHold: tour.tourHold.concat(datahold._id)
+                    }
+                }
+                return tour
+            })
+            return {...state,listTour:newTourHold}
+        case tour.UPDATE_TOUR_DELETE_AND_BOOKMARK:
+            const tourId = action.payload
+            const newTourRemove = state.listTour.filter(tour => tour._id !== tourId)
+            return {...state,listTour: newTourRemove}
         default:
             return state
     }

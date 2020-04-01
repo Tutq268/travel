@@ -54,9 +54,18 @@ let getAllTour = (userId) =>{
     })
 }
 
-let updateBookTour = (tourId,countBooked,userId) =>{
+let updateBookTour = (tourId,countBooked,userId,holdId) =>{
     return new Promise(async (resolve,reject) =>{
         const findTour = await TourModel.findTourById(tourId)
+        if(holdId){
+            const removeHold = await HoldModel.removeHold(holdId)
+            if(removeHold.n ===0){
+                return reject("Chốt tour thất bại do k update được số tour đang giữ")
+            }
+            const newTourHold = findTour.tourHold.filter(hold => !hold.equals(holdId))
+            findTour.tourHold = newTourHold
+            findTour.save()
+        }
         if(findTour.tourBookedCount + (+countBooked) > findTour.ticketCount){
             return reject("Số lượng cần đặt quá lớn. không còn đủ chỗ")
         }
@@ -104,7 +113,7 @@ let updateBookTour = (tourId,countBooked,userId) =>{
             })
             await Promise.all(pushNotifBookedTicket)
         }
-        return resolve({count: findTour.tourBookedCount,bookedId: newBookedTour._id,tourId: findTour._id})
+        return resolve({count: findTour.tourBookedCount,bookedId: newBookedTour._id,tourId: findTour._id,tourHold: findTour.tourHold})
     })
 }
 
@@ -157,7 +166,7 @@ const updateHoldTour = (tourId,count,userId) =>{
             })
             await Promise.all(pushNotifHoldTicket)
         }
-        return resolve("giữ chỗ thành công")
+        return resolve(createNewHoldTour)
 
     })
 }
@@ -232,6 +241,17 @@ let updateStartTour = data =>{
         }
     })
 }
+
+let findTourSearch = (keyword,userId) =>{
+    return new Promise(async (resolve,reject) =>{
+        const findTour = await TourModel.findTourByKeyword(keyword,userId)
+        if(!findTour){
+            return reject("không tìm thấy tour nào hết")
+        }
+        return resolve(findTour)
+    })
+}
+
 module.exports = {
     getAllUser:getAllUser,
     addNewTour:addNewTour,
@@ -242,5 +262,6 @@ module.exports = {
     updateTour:updateTour,
     updateStartTour:updateStartTour,
     updateHoldTour:updateHoldTour,
-    getInfoHold:getInfoHold
+    getInfoHold:getInfoHold,
+    findTourSearch:findTourSearch
 }

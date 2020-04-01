@@ -1,5 +1,5 @@
 import {tour} from './../services/index'
-
+import TourModel from './../model/TourModel'
 let getListTour = async (req,res) =>{
     const userId = req.user._id
     try {
@@ -53,10 +53,10 @@ let addNewTour = async (req,res) =>{
 }
 
 let addBookedTour = async (req,res) =>{
-    const {tourId,countBooked} = req.body.bookedTour
+    const {tourId,countBooked,holdId} = req.body.bookedTour
     const userId = req.user._id
     try {
-        const updateBookedTour = await tour.updateBookTour(tourId,countBooked,userId)
+        const updateBookedTour = await tour.updateBookTour(tourId,countBooked,userId,holdId)
         return res.json({
             result: "ok",
             message:"Chốt vé thành công",
@@ -186,6 +186,67 @@ let getHoldTour = async (req,res) =>{
         })
     }
 }
+
+let removeTour = async (req,res)=>{
+    try {
+        const {tourId} = req.body
+       await TourModel.removeTour(tourId)
+        return res.json({
+            result: "ok",
+            message: "success",
+            data: null
+        })
+    } catch (error) {
+        return res.json({
+            result: "failed",
+            message: error,
+            data: null
+        })
+    }
+}
+
+let bookmarkTour = async (req,res) =>{
+    try {
+        const {tourId} = req.body
+        const item = {
+            _id : tourId,
+            isBookmark: true
+        }
+        await TourModel.updateTourInfo(item)
+        return res.json({
+            result: "ok",
+            message: "đánh dấu thành công",
+            data: null
+        })
+    } catch (error) {
+        return res.json({
+            result: "failed",
+            message: error,
+            data: null
+        })
+    }
+}
+
+let searchTour = async (req,res)=>{
+    const {keyword} = req.params
+    const userId = req.user._id
+    try {
+        const findTourSearch = await tour.findTourSearch(keyword,userId)
+        return res.json({
+            result: "ok",
+            message: "lay tou thanh cong",
+            data: findTourSearch
+        })
+    } catch (error) {
+        return res.json({
+            result: "failed",
+            message: error,
+            data: null
+        })
+    }    
+   
+}
+
 module.exports ={
     getListTour : getListTour,
     getAllUser: getAllUser,
@@ -197,5 +258,8 @@ module.exports ={
     editTourInfo:editTourInfo,
     setStarTour:setStarTour,
     addHoldTour:addHoldTour,
-    getHoldTour:getHoldTour
+    getHoldTour:getHoldTour,
+    removeTour:removeTour,
+    bookmarkTour:bookmarkTour,
+    searchTour : searchTour
 }

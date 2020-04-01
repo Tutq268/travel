@@ -88,3 +88,28 @@ export const updateBookedTourSuccess = data =>{
     }
 }
 
+export const addHoldTour = data =>{
+    return {
+        type: tour.UPDATE_HOLD_TOUR_SUCCESS,
+        payload: data
+    }
+}
+
+export const removeAndBookmarkTour = tourId =>{
+    return{
+        type: tour.UPDATE_TOUR_DELETE_AND_BOOKMARK,
+        payload: tourId
+    }
+}
+
+export const getListTourSearchSuccess = data =>{
+    return {
+        type: tour.GET_LIST_TOUR_SEARCH_SUCCESS,
+        payload: data
+    }
+}
+export const clearListTourSeatch = () =>{
+    return{
+        type: tour.CLEAR_LIST_TOUR_SEARCH
+    }
+}

@@ -15,6 +15,9 @@ HoldSchema.statics ={
     },
     getHold(id){
         return this.findById(id).populate({path: "user",select: "-password"}).exec()
+    },
+    removeHold(id){
+        return this.findOneAndRemove({_id: id}).exec()
     }
 }
 
