@@ -82,7 +82,7 @@ const AddTravel = ({navigation}) =>{
     const _handleAddNewTour = () =>{
         const err = []
         if(tourName === "") err.push("tourName")
-        if(tourTrip === "") err.push("tourTrip")
+        // if(tourTrip === "") err.push("tourTrip")
         if(selectAirlines === "") err.push("selectAirlines")
         if(!ticketCount) err.push("ticketCount")
         if(!ticketPrice) err.push("ticketPrice")
@@ -247,10 +247,10 @@ const AddTravel = ({navigation}) =>{
                         onChangeText={text => setTourName(text)}
                     />
                 </View>
-                <View style={{paddingVertical: 10}}>
-                    <Text style={{fontSize: 18,color: errAddTour.includes("tourTrip") ? "red" : 'grey'}}>Lịch Trình : <Text style={{color: 'red'}}>*</Text></Text>
+             <View style={{paddingVertical: 10}}>
+                    <Text style={{fontSize: 18,color:'grey'}}>Lịch Trình :</Text>
                     <TextInput
-                        style={{paddingVertical: 8,borderBottomWidth: StyleSheet.hairlineWidth,borderBottomColor: errAddTour.includes("tourTrip") ? "red" : '#ccc',fontSize: 16}}
+                        style={{paddingVertical: 8,borderBottomWidth: StyleSheet.hairlineWidth,borderBottomColor: '#ccc',fontSize: 16}}
                         defaultValue={tourTrip}
                         onChangeText={text => setTourTrip(text)}
                     />

@@ -1,18 +1,40 @@
-import React,{useState} from 'react'
+import React,{useState,useEffect} from 'react'
 import { View,Text,StyleSheet,TouchableOpacity,Dimensions,FlatList,Image,TextInput,KeyboardAvoidingView, ScrollView } from 'react-native'
-import { HeaderTitle } from 'react-navigation-stack'
+import {useDispatch,useSelector} from 'react-redux'
 import {wordData} from './../common/fakeData'
 import Icon from 'react-native-vector-icons/Ionicons'
 import moment from 'moment'
 import Modal from 'react-native-modalbox'
 import metric from './../config/metrics'
 import Dialog from "react-native-dialog"
+import SiteMap from './../common/SiteMap'
+import {clearAddUser,removeUser} from './../action/TourAction'
+import DateTimePicker from '@react-native-community/datetimepicker';
+import API from './../services/API'
+
+
 const WordScreen = ({navigation}) =>{
     const [isOpenModal,setOpenModal] = useState(false)
-    const [titleNewTask,setTitleNewTask] = useState("")
     const [isOpenModalWordItem,setOpenModalWordItem] = useState(false)
     const [itemWord,setItemWord] = useState(null)
     const [openDialogAddSub,setOpenDialogAddSub] = useState(false)
+    const {userAdd} = useSelector(state => state.tour)
+    const [date, setDate] = useState(new Date())
+    const [deadline,setDeadline] = useState()
+    const dispatch = useDispatch()
+    const [workTitle,setworkTitle] = useState("")
+    const [openChooseDate,setOpenChooseDate] = useState(false)
+
+    useEffect(() =>{
+    },[])
+    // useEffect(() => {
+    //     const navFocusListener = navigation.addListener('willFocus', () => {    
+    //         dispatch(clearAddUser())
+    //     });
+    //     return () => {
+    //         navFocusListener.remove();
+    //     };
+    // }, []);
     const _renderAvatarStaff = (users) =>{      
           return (
             <View style={{flexDirection: 'row',marginTop: 5}}>
@@ -75,6 +97,71 @@ const WordScreen = ({navigation}) =>{
            </TouchableOpacity>
        )
     }
+    const _renderModalAddTimeWork = () =>{
+        return(
+            <Modal 
+                style={styles.modalAddTimer}
+                position="center"
+                isOpen={openChooseDate}
+                onClosed={() => setOpenChooseDate(false)}
+            >
+                <DateTimePicker
+                style={{marginTop: 32}}
+                  value={date}
+                  mode="date"
+                  display="default"
+                  onChange={(event,selectedDate) =>setDate(selectedDate)}
+                />
+                <View style={{marginTop: 32,width: '100%',paddingHorizontal: 64,flexDirection: 'row',justifyContent:"space-around"}}>
+                    <TouchableOpacity 
+                        onPress={() => {
+                            setOpenChooseDate(false)
+                            setDeadline(date.getTime())
+                        }}
+                        style={{paddingHorizontal: 32,paddingVertical: 16,backgroundColor:'#4EC1E2'}}>
+                        <Text style={{fontSize: 16,color: "#fff"}}>Xác Nhận</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                         style={{paddingHorizontal: 32,paddingVertical: 16,backgroundColor:'red'}}
+                         onPress={() => {
+                             setOpenChooseDate(false)
+                             setDate(new Date())
+                         }}
+                    >
+                        <Text style={{fontSize: 16,color: "#fff"}}>Cancle</Text>
+                    </TouchableOpacity>
+                </View>
+            </Modal>
+        )
+    }
+    const removeUserTour = userId =>{
+        dispatch(removeUser(userId))
+    }
+
+    const handleAddNewWork = () =>{
+        if(workTitle === ""){
+            alert("bạn chưa nhập tên công việc")
+            return
+        }
+        let dataAddNewWork = {
+            work_title: workTitle
+        }
+        if(deadline){
+            dataAddNewWork.deadline = deadline
+        }
+        if(userAdd.length > 0){
+            let userIds = []
+            userAdd.map(user =>{
+                userIds.push(user._id)
+            })
+            dataAddNewWork.users = userIds
+        }
+        API.createNewWork(dataAddNewWork).then(res =>{
+            console.log(res)
+        }).catch(err => {
+            console.log(err)
+        })
+    }
 
     const _renderMdalAddWord = () =>{
         return(
@@ -87,29 +174,40 @@ const WordScreen = ({navigation}) =>{
                     <TextInput
                         style={{height: 40,borderColor: "#ccc",marginTop: 8,marginLeft: 16,marginRight:16,color:"#4EC1E2",fontSize:15}}
                         placeholder="Add a word"
-                        autoFocus={true}
-                        value={titleNewTask}
-                        onChangeText={text => setTitleNewTask(text)}
+                        // autoFocus={true}
+                        value={workTitle}
+                        onChangeText={text => setworkTitle(text)}
                         />
                     <View style={{flexDirection: 'row',marginHorizontal: 16,justifyContent:"space-between",alignItems:'center'}}>
                         <View style={{flexDirection:'row'}}>
-                            <View style={styles.addDate}>
+                            <TouchableOpacity 
+                                style={styles.addDate}
+                                onPress={() => setOpenChooseDate(true)}
+                                >
                                 <Icon
                                     name="ios-calendar"
                                     size={26}
                                     color="#ccc"
                                 />
-                                <Text style={{marginLeft: 10,color:"grey"}}>No date</Text>
-                            </View>
-                            <View style={StyleSheet.flatten([styles.addDate,{marginLeft: 8}])}>
+                                <Text style={{marginLeft: 10,color:"grey"}}>{!deadline ? "No date" : moment(deadline).format("DD/MM/YYYY")}</Text>
+                            </TouchableOpacity>
+                            
+                            <TouchableOpacity 
+                                style={StyleSheet.flatten([styles.addDate,{marginLeft: 8}])}
+                                onPress={() =>{
+                                         SiteMap.showScreen(navigation,"AddUserWork")
+                                        }}
+                                >
                                     <Icon 
                                         name="ios-person-add"
-                                        size={18}
+                                        size={25}
                                         color="#ccc"
                                         />
-                            </View>
+                            </TouchableOpacity>
                         </View>
-                        <TouchableOpacity style={{width: 26,height:26,borderRadius: 26,backgroundColor: "#4EC1E2",justifyContent:'center',alignItems:'center'}}>
+                        <TouchableOpacity
+                            onPress={() => handleAddNewWork()}
+                            style={{width: 26,height:26,borderRadius: 26,backgroundColor: "#4EC1E2",justifyContent:'center',alignItems:'center'}}>
                             <Icon 
                                 name="md-arrow-up"
                                 size={20}
@@ -117,6 +215,27 @@ const WordScreen = ({navigation}) =>{
                             />
                         </TouchableOpacity>
                     </View>
+                   {userAdd.length >0 && 
+                        <View style={{padding: 16,flexDirection: "row",flex: 1,flexWrap: 'wrap'}}>
+                            {userAdd.map(user =>{
+                                return(
+                                    <View style={styles.userAddStyle} key={user._id}>
+                                        <TouchableOpacity 
+                                            activeOpacity={0.6}
+                                            style={styles.removeAddUser}
+                                            onPress={() => removeUserTour(user._id)}
+                                         >
+                                        <Icon 
+                                        name="ios-close-circle"
+                                        color="grey"
+                                        size={16}
+                                        />
+                                        </TouchableOpacity>
+                                        <Text style={{fontSize: 16}}>{user.username}</Text>
+                                    </View>
+                                )
+                            })}
+                        </View>}
             </Modal>
         )
     }
@@ -287,7 +406,13 @@ const WordScreen = ({navigation}) =>{
 
     const renderAddWordButton = () =>{
         return (
-                <TouchableOpacity style={styles.addWord} activeOpacity={0.5} onPress={() => setOpenModal(true)}>
+                <TouchableOpacity
+                     style={styles.addWord}
+                      activeOpacity={0.5} 
+                      onPress={() => {
+                          setOpenModal(true)
+                          dispatch(clearAddUser())
+                          }}>
                     <Icon 
                         name="ios-add"
                         size={30}
@@ -311,6 +436,7 @@ const WordScreen = ({navigation}) =>{
                         {_renderMdalAddWord()}
                         {_renderModalWordItem()}
                         {_renderDialogAddSub()}
+                        {_renderModalAddTimeWork()}
             </View>
       
     )
@@ -355,7 +481,7 @@ const styles = StyleSheet.create({
         borderBottomWidth: StyleSheet.hairlineWidth,
     },
     modalAddWord:{
-        height: metric.DEVIDE_HEIGHT*0.30,
+        height: metric.DEVIDE_HEIGHT*0.38,
         backgroundColor: '#fff',
         borderTopLeftRadius: 10,
         borderTopRightRadius: 10
@@ -387,7 +513,24 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         borderColor: '#ccc',
         borderWidth: StyleSheet.hairlineWidth
-
-    }
+    },
+    modalAddTimer: {
+        height: 400,
+        backgroundColor: "#ccc"
+    },
+    userAddStyle:{
+        paddingHorizontal: 10,
+        paddingBottom: 6,
+        marginBottom: 16,
+        borderColor: "#ccc",
+        borderWidth: StyleSheet.hairlineWidth,
+        marginRight: 16,
+        borderRadius: 6
+    },
+    removeAddUser:{
+        position: 'absolute',
+        right: -8,
+        top: -10
+    },
 })
 export default WordScreen

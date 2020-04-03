@@ -84,16 +84,9 @@ const AddUserToTour = ({navigation}) =>{
                     style={{width: 56,height:56,borderRadius: 56,flex: 0.3}}
                    />
                 <Text style={{fontSize: 20,fontWeight: "400",flex: 0.5}}>{data.username}</Text>
-                {/* {userAdd.length > 0 && userAdd.includes(data._id)
-                ? <Text style={{flex: 0.2,fontSize: 18,color: "red",fontWeight: "400"}}>Xoá</Text>
-                :     <TouchableOpacity style={{flex: 0.2}} onPress={() => handleAdd(data)}>
-                            <Text style={{fontSize: 18,color: "#4EC1E2",fontWeight: "400"}}>Thêm</Text>
-                        </TouchableOpacity>
-                } */}
                  <TouchableOpacity style={{flex: 0.2}} onPress={() => checkAdd < 0 ?  handleAdd(data) : handleRemove(data._id)}>
                         <Text style={{fontSize: 18,color: checkAdd < 0 ? "#4EC1E2" : "red",fontWeight: "400"}}>{checkAdd < 0  ? "Thêm" : "Xoá"}</Text>
                     </TouchableOpacity>
-                
             </View>
         )
     }

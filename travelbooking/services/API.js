@@ -123,4 +123,8 @@ API.removeHoldTour = (holdId,tourId) =>{
     return API.instance.post("/tour/remove-hold",param)
 }
 
+API.createNewWork = (param) =>{
+    return API.instance.post("/work/add-new",param)
+}
+
 export default API

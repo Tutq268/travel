@@ -204,7 +204,7 @@ const AddWordScreen = ({navigation}) =>{
                     </Menu>
                 </View>
                 
-                <Text style={{marginTop: 3,fontSize: 17,color: 'grey',fontWeight:'500',flex: 1,flexWrap: 'wrap'}}>{data.tourtrip}</Text>
+               {data.tourtrip !== "" && <Text style={{marginTop: 3,fontSize: 17,color: 'grey',fontWeight:'500',flex: 1,flexWrap: 'wrap'}}>{data.tourtrip}</Text>}
                 <View style={{flexDirection: 'row',justifyContent:'space-between',paddingRight: 16,marginTop: 5}}>
                     <View style={{flexDirection: 'row'}}>
                         <Text style={{fontSize: 16,marginRight: 10,fontWeight: '500'}}>Giá:</Text>

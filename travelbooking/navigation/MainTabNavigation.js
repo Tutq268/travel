@@ -18,6 +18,7 @@ import TabbarIcon from './../common/TabbarIcon'
 
 const Word = createStackNavigator({
     Word: WordScreen,
+    AddUserWork: AddUserToTour
 })
 
 Word.navigationOptions = ({navigation}) =>{
