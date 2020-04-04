@@ -1,5 +1,5 @@
 import React,{useState,useEffect} from 'react'
-import { View,Text,StyleSheet,TouchableOpacity,Dimensions,FlatList,Image,TextInput,KeyboardAvoidingView, ScrollView } from 'react-native'
+import { View,Text,StyleSheet,TouchableOpacity,Dimensions,FlatList,Image,TextInput,KeyboardAvoidingView, ScrollView, Alert } from 'react-native'
 import {useDispatch,useSelector} from 'react-redux'
 import {wordData} from './../common/fakeData'
 import Icon from 'react-native-vector-icons/Ionicons'
@@ -9,8 +9,10 @@ import metric from './../config/metrics'
 import Dialog from "react-native-dialog"
 import SiteMap from './../common/SiteMap'
 import {clearAddUser,removeUser} from './../action/TourAction'
+import {addWorkSuccess,getListWork,updateDeadlineSuceess} from './../action/WorkAction'
 import DateTimePicker from '@react-native-community/datetimepicker';
 import API from './../services/API'
+import apiUrl from './../config/ApiUrl'
 
 
 const WordScreen = ({navigation}) =>{
@@ -18,23 +20,41 @@ const WordScreen = ({navigation}) =>{
     const [isOpenModalWordItem,setOpenModalWordItem] = useState(false)
     const [itemWord,setItemWord] = useState(null)
     const [openDialogAddSub,setOpenDialogAddSub] = useState(false)
-    const {userAdd} = useSelector(state => state.tour)
     const [date, setDate] = useState(new Date())
     const [deadline,setDeadline] = useState()
     const dispatch = useDispatch()
+    const [statusDeadline,setStatusDeadline] = useState("add")
     const [workTitle,setworkTitle] = useState("")
     const [openChooseDate,setOpenChooseDate] = useState(false)
+    const [dateEdit,setDateEdit] = useState(new Date())
+    const [timeChoose,setTimeChoose] = useState()
 
+    const {userAdd} = useSelector(state => state.tour)
+    const {listWord} = useSelector(state => state.work)
     useEffect(() =>{
+        fetchData()
     },[])
-    // useEffect(() => {
-    //     const navFocusListener = navigation.addListener('willFocus', () => {    
-    //         dispatch(clearAddUser())
-    //     });
-    //     return () => {
-    //         navFocusListener.remove();
-    //     };
-    // }, []);
+    useEffect(() => {
+        const navFocusListener = navigation.addListener('willFocus', () => {    
+            fetchData()
+        });
+        return () => {
+            navFocusListener.remove();
+        };
+    }, []);
+
+    const fetchData = async () =>{
+        API.getAllWork().then(res =>{
+            const data = res.data
+            if(data.result === "ok"){
+                dispatch(getListWork(data.data))
+            }else{
+                alert(data.message)
+            }
+        }).catch(err =>{
+            alert(err)
+        })
+    }
     const _renderAvatarStaff = (users) =>{      
           return (
             <View style={{flexDirection: 'row',marginTop: 5}}>
@@ -43,11 +63,11 @@ const WordScreen = ({navigation}) =>{
                         if(index < 2){
                             return (
                                 <Image 
-                                key={index}
-                                source={{uri: user.avatar}}
-                                resizeMode="contain"
-                                style={{width: 18,height:18,borderRadius: 18,marginRight: 3}}
-                               />
+                                    key={index}
+                                    source= {!user.avatar ? require("./../assets/default-avatar.png") :  {uri: apiUrl.host + data.avatar}}
+                                    resizeMode="contain"
+                                    style={{width: 18,height:18,borderRadius: 18,marginRight: 6,borderWidth: StyleSheet.hairlineWidth}}
+                                />
                             )
                         }else{
                             return(
@@ -70,7 +90,9 @@ const WordScreen = ({navigation}) =>{
     const _renderItem = (item) =>{
         const data = item.item
        return(
-           <TouchableOpacity activeOpacity={0.8} style={styles.wordItem} onPress={() => chooseWordItem(data)}>
+           <TouchableOpacity activeOpacity={0.8} style={styles.wordItem}
+             onPress={() => chooseWordItem(data)}
+             >
                <TouchableOpacity style={{flex: 0.1}}>
                 <Icon 
                     name="ios-radio-button-off"
@@ -79,7 +101,7 @@ const WordScreen = ({navigation}) =>{
                </TouchableOpacity>
               
                <View style={{flexDirection:'column',flex: 0.7}}>
-                    <Text style={{fontSize: 16,fontWeight:'400'}}>{data.title}</Text>
+                    <Text style={{fontSize: 16,fontWeight:'400'}}>{data.work_title}</Text>
                     <View style={{flexDirection: 'row',marginTop: 8}}>
                         <Icon 
                             name="ios-calendar"
@@ -87,7 +109,7 @@ const WordScreen = ({navigation}) =>{
                             color="#ccc"
                             
                         />
-                        <Text style={{color: "red",fontSize: 13,marginLeft: 8}}>{moment(data.createAt).format("MMM Do YY")}</Text>
+                       {data.deadline && <Text style={{color: "red",fontSize: 13,marginLeft: 8}}>{moment(data.deadline).format("MMM Do YY")}</Text>}
                     </View>
                </View>
                <View style={{flex: 0.2,justifyContent:'center',alignItems:'center'}}>
@@ -96,6 +118,42 @@ const WordScreen = ({navigation}) =>{
                </View>
            </TouchableOpacity>
        )
+    }
+    const chooseDate = () =>{
+        if(statusDeadline === "add"){
+            setOpenChooseDate(false)
+            setDeadline(date.getTime())
+         }else{
+             if(dateEdit === timeChoose){
+                setOpenChooseDate(false)
+                setDateEdit(new Date())
+                return
+             }
+             else{
+                 const param = {
+                     _id: itemWord._id,
+                     deadline: dateEdit.getTime()
+                    }
+                 API.updateTimerWorkItem(param).then(res =>{
+                     const data = res.data
+                     if(data.result === "ok"){
+                        dispatch(updateDeadlineSuceess(param))
+                        const newItemWork = {
+                            ...itemWord,
+                            deadline: param.deadline
+                        }
+                        setItemWord(newItemWork)
+                        setOpenChooseDate(false)
+                        setDateEdit(new Date())
+                     }else{
+                         alert(data.message)
+                     }
+                 }).catch(err =>{
+                     alert(err)
+                 })
+             }
+           
+         }
     }
     const _renderModalAddTimeWork = () =>{
         return(
@@ -106,27 +164,38 @@ const WordScreen = ({navigation}) =>{
                 onClosed={() => setOpenChooseDate(false)}
             >
                 <DateTimePicker
-                style={{marginTop: 32}}
-                  value={date}
-                  mode="date"
-                  display="default"
-                  onChange={(event,selectedDate) =>setDate(selectedDate)}
+                    style={{marginTop: 32}}
+                    value={statusDeadline === "add" ? date : dateEdit}
+                    // minimumDate={date}
+                    mode="date"
+                    display="default"
+                    onChange={(event,selectedDate) =>{
+                                if(statusDeadline === "add"){
+                                    setDate(selectedDate)
+                                }else{
+                                    setDateEdit(selectedDate)
+                                }
+                              
+                            }}
                 />
                 <View style={{marginTop: 32,width: '100%',paddingHorizontal: 64,flexDirection: 'row',justifyContent:"space-around"}}>
                     <TouchableOpacity 
-                        onPress={() => {
-                            setOpenChooseDate(false)
-                            setDeadline(date.getTime())
-                        }}
+                     onPress={() => chooseDate()}
                         style={{paddingHorizontal: 32,paddingVertical: 16,backgroundColor:'#4EC1E2'}}>
                         <Text style={{fontSize: 16,color: "#fff"}}>Xác Nhận</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                          style={{paddingHorizontal: 32,paddingVertical: 16,backgroundColor:'red'}}
                          onPress={() => {
-                             setOpenChooseDate(false)
-                             setDate(new Date())
-                         }}
+                             if(statusDeadline === "add"){
+                                setOpenChooseDate(false)
+                                setDate(new Date())
+                             }else{
+                                setOpenChooseDate(false)
+                                setDateEdit(new Date())
+                             }
+                           
+                        }}
                     >
                         <Text style={{fontSize: 16,color: "#fff"}}>Cancle</Text>
                     </TouchableOpacity>
@@ -157,7 +226,14 @@ const WordScreen = ({navigation}) =>{
             dataAddNewWork.users = userIds
         }
         API.createNewWork(dataAddNewWork).then(res =>{
-            console.log(res)
+            const data = res.data
+            if(data.result === "ok"){
+                dispatch(addWorkSuccess(data.data))
+                setOpenModal(false)
+            }
+            else{
+                alert(data.message)
+            }
         }).catch(err => {
             console.log(err)
         })
@@ -182,8 +258,10 @@ const WordScreen = ({navigation}) =>{
                         <View style={{flexDirection:'row'}}>
                             <TouchableOpacity 
                                 style={styles.addDate}
-                                onPress={() => setOpenChooseDate(true)}
-                                >
+                                onPress={() => {
+                                    setOpenChooseDate(true)
+                                    setStatusDeadline("add")
+                                }}>
                                 <Icon
                                     name="ios-calendar"
                                     size={26}
@@ -269,17 +347,41 @@ const WordScreen = ({navigation}) =>{
                                     />
                             </TouchableOpacity>
                             <View style={{flexDirection:'column',marginLeft: 16}}>
-                                <Text style={{fontSize: 20,fontWeight:'400'}}>{itemWord.title}</Text>
+                                <Text style={{fontSize: 20,fontWeight:'400'}}>{itemWord.work_title}</Text>
                                 <View style={{flexDirection:'row',marginTop: 8}}>
-                                    <View style={StyleSheet.flatten([styles.word_item_time])}>
+                                {itemWord.deadline ?  
+                                    <TouchableOpacity 
+                                        style={StyleSheet.flatten([styles.word_item_time])}
+                                        onPress={() => {
+                                            setOpenChooseDate(true)
+                                            setStatusDeadline("edit")
+                                            setTimeChoose(itemWord.deadline)
+                                            setDateEdit(itemWord.deadline)
+                                        }}
+                                        >
                                         <Icon 
                                             name="ios-calendar"
                                             size={15}
                                             color="red"
                                         />
-                                         <Text style={{color: "red",fontSize: 13,marginLeft: 8}}>{moment(itemWord.createAt).format("MMM DD")}</Text>
-                                    </View>
-
+                                        <Text style={{color: "red",fontSize: 13,marginLeft: 8}}>{moment(itemWord.deadline).format("MMM DD")}</Text>
+                                  
+                                    </TouchableOpacity> :
+                                    <TouchableOpacity
+                                        onPress={() => {
+                                            setOpenChooseDate(true)
+                                            setStatusDeadline("edit")
+                                        }}
+                                    >
+                                        <Icon 
+                                            name="ios-calendar"
+                                            size={26}
+                                            color="#ccc"
+                                            />    
+                                    </TouchableOpacity>
+                                    
+                                        }
+                                    {itemWord.users.length > 0 &&                                           
                                     <View style={StyleSheet.flatten([styles.word_item_time,{marginLeft: 8,alignItems:'center'}])}>
                                         {
                                             itemWord.users.map((user,index) =>{
@@ -287,7 +389,7 @@ const WordScreen = ({navigation}) =>{
                                                     return(
                                                         <Image 
                                                             key={index}
-                                                            source={{uri: user.avatar}}
+                                                            source={!user.avatar ? require("./../assets/default-avatar.png") : {uri : apiUrl.host + user.avatar}}
                                                             style={{width: 18,height: 18, borderRadius: 18,marginRight: 2}}
                                                         />
                                                     )
@@ -298,15 +400,15 @@ const WordScreen = ({navigation}) =>{
                                                 }
                                             })
                                         }
-                                    </View>
+                                    </View>}
                                 </View>
                                 <View style={{flexDirection: 'row',marginTop: 16,marginLeft: 8}}>
                                     <TouchableOpacity>
                                         <Icon 
                                             name="ios-person-add"
                                             color="#ccc"
-                                            size={22}
-                                            style={{marginRight: 16}}
+                                            size={28}
+                                            style={{marginRight: 20}}
                                             />
                                     </TouchableOpacity>
                                    
@@ -314,8 +416,8 @@ const WordScreen = ({navigation}) =>{
                                         <Icon 
                                             name="ios-bookmark"
                                             color="#ccc"
-                                            size={22}
-                                            style={{marginRight: 16}}
+                                            size={28}
+                                            style={{marginRight: 20}}
                                             />
                                     </TouchableOpacity>
                                     
@@ -323,8 +425,8 @@ const WordScreen = ({navigation}) =>{
                                         <Icon
                                             name="ios-chatboxes"
                                             color="#ccc"
-                                            size={22}
-                                            style={{marginRight: 16}}
+                                            size={28}
+                                            style={{marginRight: 20}}
                                             />
                                     </TouchableOpacity>
                                    
@@ -353,7 +455,7 @@ const WordScreen = ({navigation}) =>{
                                     />
                                     <Text style={{marginLeft: 16,color: "grey",fontSize: 17}}>Add Sub-task</Text>
                                 </TouchableOpacity>
-                               
+                               {itemWord.subs.length > 0 &&
                                 <View style={{flex: 1}}>
                                     <FlatList 
                                         data={itemWord.subs}
@@ -374,13 +476,13 @@ const WordScreen = ({navigation}) =>{
                                                                 textDecorationLine: sub.status === 'done' ? "line-through" : "none",
                                                                 color: sub.status === 'done' ? "grey" : "black"
                                                                 }}>
-                                                            {sub.title}
+                                                            {sub.sub_title}
                                                     </Text>
                                                 </TouchableOpacity>
                                             )
                                         }}
                                     />
-                                </View>
+                                </View>}
                             </View>
                         </View>
                     </View>
@@ -411,6 +513,7 @@ const WordScreen = ({navigation}) =>{
                       activeOpacity={0.5} 
                       onPress={() => {
                           setOpenModal(true)
+                          setDeadline(null)
                           dispatch(clearAddUser())
                           }}>
                     <Icon 
@@ -425,14 +528,16 @@ const WordScreen = ({navigation}) =>{
     return (
             <View style={styles.container}>
                     {!isOpenModal && !isOpenModalWordItem && renderAddWordButton()}
+                    {listWord &&
                     <View style={styles.listWord}>
                         <FlatList 
-                            data={wordData}
+                            data={listWord}
                             showsVerticalScrollIndicator={false}
                             keyExtractor={(value, index) => `${index}`}
                             renderItem={(item) => _renderItem(item)}
                         />
                     </View>
+                    }
                         {_renderMdalAddWord()}
                         {_renderModalWordItem()}
                         {_renderDialogAddSub()}

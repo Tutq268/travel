@@ -127,4 +127,12 @@ API.createNewWork = (param) =>{
     return API.instance.post("/work/add-new",param)
 }
 
+API.getAllWork = () =>{
+    return API.instance.get("/work/find-all")
+}
+
+API.updateTimerWorkItem = (param) =>{
+    return API.instance.post("/work/update-deadline",param)
+}
+
 export default API

@@ -9,9 +9,26 @@ let WordSchema = new schema({
     account : {type: schema.Types.ObjectId,ref: 'User'},
     users: [{type: schema.Types.ObjectId,ref: 'User'}],
     subs: [{type: schema.Types.ObjectId,ref: 'Subtask'}],
-    comments: [{type: schema.Types,ObjectId,ref: "Comment"}],
+    comments: [{type: schema.Types.ObjectId,ref: "Comment"}],
     createAt: {type: Number,default: Date.now()},
     updateAt: {type: Number,default: null}
 })
+
+WordSchema.statics ={
+    createNew(item){
+        return this.create(item)
+    },
+    findAllWork(userId){
+        return this.find({
+            $or :[
+                {"account" : userId},
+                {"users" : {$in :[userId]}}
+            ]
+        }).populate("users","avatar").exec()
+    },
+    updateDeadline(item){
+        return this.findByIdAndUpdate(item._id,item).exec()
+    }
+}
 
 module.exports = mongoose.model("Word",WordSchema)
