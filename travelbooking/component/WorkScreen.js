@@ -1,7 +1,6 @@
 import React,{useState,useEffect} from 'react'
 import { View,Text,StyleSheet,TouchableOpacity,Dimensions,FlatList,Image,TextInput,KeyboardAvoidingView, ScrollView, Alert } from 'react-native'
 import {useDispatch,useSelector} from 'react-redux'
-import {wordData} from './../common/fakeData'
 import Icon from 'react-native-vector-icons/Ionicons'
 import moment from 'moment'
 import Modal from 'react-native-modalbox'
@@ -9,7 +8,7 @@ import metric from './../config/metrics'
 import Dialog from "react-native-dialog"
 import SiteMap from './../common/SiteMap'
 import {clearAddUser,removeUser} from './../action/TourAction'
-import {addWorkSuccess,getListWork,updateDeadlineSuceess} from './../action/WorkAction'
+import {addWorkSuccess,getListWork,updateDeadlineSuceess,addSubtaskSuccess,changeStatusWorkSuccess,changeStatusSubTask} from './../action/WorkAction'
 import DateTimePicker from '@react-native-community/datetimepicker';
 import API from './../services/API'
 import apiUrl from './../config/ApiUrl'
@@ -28,6 +27,7 @@ const WordScreen = ({navigation}) =>{
     const [openChooseDate,setOpenChooseDate] = useState(false)
     const [dateEdit,setDateEdit] = useState(new Date())
     const [timeChoose,setTimeChoose] = useState()
+    const [subTask,setSubTask] = useState("")
 
     const {userAdd} = useSelector(state => state.tour)
     const {listWord} = useSelector(state => state.work)
@@ -87,17 +87,44 @@ const WordScreen = ({navigation}) =>{
         setItemWord(item)
     }
 
+    const changeStatusWork = (workId,status) =>{
+        const param ={
+            _id: workId,
+            status_work: status
+        }
+       API.changeStatusWork(param).then(res =>{
+           const data = res.data
+           if(data.result === "ok"){
+                dispatch(changeStatusWorkSuccess(param))
+           }else{
+               alert(data.message)
+           }
+       }).catch(err =>{
+           alert(err)
+       })
+    }
+
     const _renderItem = (item) =>{
         const data = item.item
        return(
            <TouchableOpacity activeOpacity={0.8} style={styles.wordItem}
              onPress={() => chooseWordItem(data)}
              >
-               <TouchableOpacity style={{flex: 0.1}}>
-                <Icon 
-                    name="ios-radio-button-off"
-                    size={26}
-                    />
+               <TouchableOpacity 
+                style={{flex: 0.1}}
+                onPress={() => changeStatusWork(data._id,data.status_work === "pending" ? "done" : "pending")}
+                >
+                    {data.status_work === "pending" ?
+                    <Icon 
+                        name="ios-radio-button-off"
+                        size={26}
+                        /> :
+                    <Icon 
+                        name ="ios-checkmark-circle-outline"
+                        size={26}
+                        color="green"
+                        />
+                        }
                </TouchableOpacity>
               
                <View style={{flexDirection:'column',flex: 0.7}}>
@@ -318,6 +345,26 @@ const WordScreen = ({navigation}) =>{
         )
     }
 
+    const handleChangeStatusSubtask = (status,subTaskId) =>{
+        const param ={
+            workId: itemWord._id,
+            subTaskId: subTaskId,
+            status: status
+        }
+        API.changeStatusSubTask(param).then(res =>{
+            const data = res.data
+            if(data.result === "ok"){
+                setItemWord(data.data)
+                dispatch(changeStatusSubTask(data.data))
+            }else{
+                alert(data.message)
+            }
+
+        }).catch(err =>{
+            alert(err)
+        })
+    }
+
     const _renderModalWordItem = () =>{
         if(!itemWord){
             return(
@@ -464,7 +511,11 @@ const WordScreen = ({navigation}) =>{
                                         renderItem = {(item) =>{
                                             const sub = item.item
                                             return(
-                                                <TouchableOpacity activeOpacity={1} style={{flexDirection: "row",alignItems:'center',paddingVertical: 8,borderBottomColor: '#ccc',borderBottomWidth: StyleSheet.hairlineWidth}}>
+                                                <TouchableOpacity 
+                                                    activeOpacity={1} 
+                                                    style={{flexDirection: "row",alignItems:'center',paddingVertical: 8,borderBottomColor: '#ccc',borderBottomWidth: StyleSheet.hairlineWidth}}
+                                                    onPress={() => handleChangeStatusSubtask(sub.status === "done" ? "pending" : "done",sub._id)}
+                                                    >
                                                     <Icon 
                                                         name={sub.status === "done" ? "ios-checkmark-circle" : "ios-radio-button-off"}
                                                         size={23}
@@ -491,17 +542,51 @@ const WordScreen = ({navigation}) =>{
         }
     }
 
+    const handleAddSubTask = () =>{
+        // setOpenDialogAddSub(false)
+        if(subTask === ""){
+            return
+        }
+        const param = {
+            _id: itemWord._id,
+            taskTitle : subTask
+        }
+        API.addSubTask(param).then(res =>{
+            const data = res.data
+            if(data.result === "ok"){
+                dispatch(addSubtaskSuccess(data.data))
+                const newItemWork = {
+                    ...itemWord,
+                    subs: itemWord.subs.concat(data.data)
+                }
+                setItemWord(newItemWork)
+                setSubTask("")
+                setOpenDialogAddSub(false)
+            }else{
+                alert(data.message)
+            }
+        }).catch(err =>{
+            alert(err)
+        })
+    }
+
     const _renderDialogAddSub = () =>{
         return(
             <Dialog.Container visible={openDialogAddSub}>
                 <Dialog.Title>Type new sub-task</Dialog.Title>
                     <TextInput
                             style={{borderColor: "#ccc",paddingHorizontal: 16,marginBottom: 16,fontSize:18}}
+                            value={subTask}
                             placeholder="Sub-task"
+                            onChangeText={text => setSubTask(text)}
                             autoFocus={true}
                         />
-                <Dialog.Button style={{color: 'red'}} label="Cancel" onPress={() => setOpenDialogAddSub(false)} />
-                <Dialog.Button label="Add" onPress={() => setOpenDialogAddSub(false)}/>
+                <Dialog.Button style={{color: 'red'}} label="Cancel"
+                                 onPress={() => {
+                                  setOpenDialogAddSub(false)
+                                  setSubTask("")
+                                  }} />
+                <Dialog.Button label="Add" onPress={() => handleAddSubTask()}/>
             </Dialog.Container>
         )
     }

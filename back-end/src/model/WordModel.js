@@ -4,7 +4,7 @@ let schema = mongoose.Schema
 
 let WordSchema = new schema({
     work_title: {type: String,required: true},
-    status_work: {type: String,default: 'pedding'},
+    status_work: {type: String,default: 'pending'},
     deadline: {type: Number,default: null},
     account : {type: schema.Types.ObjectId,ref: 'User'},
     users: [{type: schema.Types.ObjectId,ref: 'User'}],
@@ -24,9 +24,18 @@ WordSchema.statics ={
                 {"account" : userId},
                 {"users" : {$in :[userId]}}
             ]
-        }).populate("users","avatar").exec()
+        }).sort({createAt: -1}).populate("users","avatar").populate("subs").exec()
     },
     updateDeadline(item){
+        return this.findByIdAndUpdate(item._id,item).exec()
+    },
+    findWorkById(id){
+        return this.findById(id).exec()
+    },
+    findByIdAndPopulate(id){
+        return this.findById(id).populate("users","avatar").populate("subs").exec()
+    },
+    updateStautsWork(item){
         return this.findByIdAndUpdate(item._id,item).exec()
     }
 }

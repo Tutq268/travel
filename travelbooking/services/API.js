@@ -135,4 +135,16 @@ API.updateTimerWorkItem = (param) =>{
     return API.instance.post("/work/update-deadline",param)
 }
 
+API.addSubTask = (param) =>{
+    return API.instance.post("/work/add-subtask",param)
+}
+
+API.changeStatusWork = param =>{
+    return API.instance.post("/work/change-status-work",param)
+}
+
+API.changeStatusSubTask = (param) =>{
+    return API.instance.post("/work/change-status-subtask",param)
+}
+
 export default API

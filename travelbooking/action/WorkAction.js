@@ -20,3 +20,24 @@ export const updateDeadlineSuceess = data =>{
         payload: data
     }
 }
+
+export const addSubtaskSuccess = data =>{
+    return {
+        type: work.ADD_SUB_TASK_SUCCESS,
+        payload: data
+    }
+}
+
+export const changeStatusWorkSuccess = data =>{
+    return {
+        type: work.CHANGE_STATUS_WORK_SUCCESS,
+        payload: data
+    }
+}
+
+export const changeStatusSubTask = data =>{
+    return {
+        type: work.CHANGE_STATUS_SUB_TASK,
+        payload: data
+    }
+}
