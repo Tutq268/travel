@@ -7,7 +7,7 @@ import Modal from 'react-native-modalbox'
 import metric from './../config/metrics'
 import Dialog from "react-native-dialog"
 import SiteMap from './../common/SiteMap'
-import {clearAddUser,removeUser} from './../action/TourAction'
+import {clearAddUser,removeUser,getUserInWork} from './../action/TourAction'
 import {addWorkSuccess,getListWork,updateDeadlineSuceess,addSubtaskSuccess,changeStatusWorkSuccess,changeStatusSubTask} from './../action/WorkAction'
 import DateTimePicker from '@react-native-community/datetimepicker';
 import API from './../services/API'
@@ -108,7 +108,10 @@ const WordScreen = ({navigation}) =>{
         const data = item.item
        return(
            <TouchableOpacity activeOpacity={0.8} style={styles.wordItem}
-             onPress={() => chooseWordItem(data)}
+             onPress={() => {
+                    chooseWordItem(data)
+                    dispatch(getUserInWork(data.users))
+                }}
              >
                <TouchableOpacity 
                 style={{flex: 0.1}}
@@ -428,10 +431,10 @@ const WordScreen = ({navigation}) =>{
                                     </TouchableOpacity>
                                     
                                         }
-                                    {itemWord.users.length > 0 &&                                           
+                                    {userAdd.length > 0 &&                                           
                                     <View style={StyleSheet.flatten([styles.word_item_time,{marginLeft: 8,alignItems:'center'}])}>
                                         {
-                                            itemWord.users.map((user,index) =>{
+                                            userAdd.map((user,index) =>{
                                                 if(index < 2){
                                                     return(
                                                         <Image 
@@ -450,7 +453,7 @@ const WordScreen = ({navigation}) =>{
                                     </View>}
                                 </View>
                                 <View style={{flexDirection: 'row',marginTop: 16,marginLeft: 8}}>
-                                    <TouchableOpacity>
+                                    <TouchableOpacity onPress={() =>SiteMap.showScreen(navigation,"AddUserWork",{"SCREEN": {name: "work",workId: itemWord._id}})}>
                                         <Icon 
                                             name="ios-person-add"
                                             color="#ccc"
@@ -598,6 +601,7 @@ const WordScreen = ({navigation}) =>{
                       activeOpacity={0.5} 
                       onPress={() => {
                           setOpenModal(true)
+                          setworkTitle("")
                           setDeadline(null)
                           dispatch(clearAddUser())
                           }}>

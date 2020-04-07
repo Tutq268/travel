@@ -98,7 +98,8 @@ const TourReducer = (state = initialState,action) =>{
             })
             return {...state,listTour:newTourAfterRemoveHold}
 
-
+        case tour.GET_USER_IN_WORK: 
+            return{...state,userAdd: action.payload}
         default:
             return state
     }

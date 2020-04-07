@@ -3,8 +3,10 @@ import { View,Text,StyleSheet,TouchableOpacity,SafeAreaView,TextInput,FlatList,I
 import Icon from 'react-native-vector-icons/Ionicons'
 import { useDispatch,useSelector } from 'react-redux'
 import {getListUser,addUser,removeUser} from './../../action/TourAction'
+import {addUserToWork,removeUserWork} from './../../action/WorkAction'
 import AsyncStorage from '@react-native-community/async-storage'
 import apiUrl from './../../config/ApiUrl'
+import API from './../../services/API'
 const AddUserToTour = ({navigation}) =>{
     const [textSearch,setTextSearch] = useState("")
     const {listUser,getUserError,userAdd} = useSelector(state => state.tour)
@@ -62,11 +64,51 @@ const AddUserToTour = ({navigation}) =>{
     }
 
     const handleAdd = (data) =>{
-        dispatch(addUser(data))
+        const screen = navigation.getParam("SCREEN")
+        if(screen.name === "work"){
+            const param = {
+                userId: data._id,
+                workId: screen.workId
+            }
+            API.addUserToWork(param).then(res =>{
+               const dataAdd = res.data
+               if(dataAdd.result === "ok"){
+                  dispatch(addUser(data))
+             
+               }else{
+                   alert(dataAdd.message)
+               }
+            }).catch(err =>{
+                alert(err)
+            })
+        }else{
+            dispatch(addUser(data))
+        }
+    
     }
 
     const handleRemove = (userId) =>{
-        dispatch(removeUser(userId))
+        const screen = navigation.getParam("SCREEN")
+        if(screen.name === "work"){
+            const param = {
+                userId: userId,
+                workId: screen.workId
+            }
+            API.removeUserWork(param).then(res =>{
+                const dataRemove = res.data
+                if(dataRemove.result === "ok"){
+                    dispatch(removeUser(userId))
+                }else{
+                    alert(dataRemove.message)
+                }
+            }).catch(err =>{
+                alert(err)
+            })
+        }
+        else{
+            dispatch(removeUser(userId))
+        }
+       
     }
 
     const _renderItem = (item,index) =>{

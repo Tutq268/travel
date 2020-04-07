@@ -106,11 +106,50 @@ let changeStatusSubtask = async (req,res) =>{
     }
 }
 
+let addUserToWork = async (req,res) =>{
+    try {
+        const {userId,workId} = req.body
+        const accountId = req.user._id
+        const addUser =  await work.addUserWork(userId,workId,accountId)
+        return res.json({
+            result: "ok",
+            message: addUser,
+            data :null
+        })
+    } catch (error) {
+        return res.json({
+            result: "failed",
+            message: error,
+            data: null
+        })
+    }
+}
+
+let removeUserToWork = async (req,res) =>{
+    try {
+        const {userId,workId} = req.body
+        const removeUser = await work.removeUserToWork(userId,workId)
+        return res.json({
+            result: "ok",
+            message: removeUser,
+            data :null
+        })
+    } catch (error) {
+        return res.json({
+            result: "failed",
+            message: error,
+            data: null
+        })
+    }
+}
+
 module.exports ={
     addNewWork:addNewWork,
     findAllWork:findAllWork,
     updateDealineWork:updateDealineWork,
     addSubtask:addSubtask,
     changeStatusWork:changeStatusWork,
-    changeStatusSubtask:changeStatusSubtask
+    changeStatusSubtask:changeStatusSubtask,
+    addUserToWork:addUserToWork,
+    removeUserToWork:removeUserToWork
 }

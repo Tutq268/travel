@@ -41,3 +41,17 @@ export const changeStatusSubTask = data =>{
         payload: data
     }
 }
+
+export const addUserToWork = (data) =>{
+    return {
+        type: work.ADD_USER_TO_WORK,
+        payload: data
+    }
+}
+
+export const removeUserWork = data =>{
+    return {
+        type: work.REMOVE_USER_WORK,
+        payload: data
+    }
+}

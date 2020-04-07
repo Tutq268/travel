@@ -120,3 +120,10 @@ export const remoteHoldtOUR = (data) =>{
         payload: data
     }
 }
+
+export const getUserInWork = data =>{
+    return{
+        type: tour.GET_USER_IN_WORK,
+        payload: data
+    }
+}

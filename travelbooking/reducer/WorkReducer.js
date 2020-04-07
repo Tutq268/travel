@@ -66,6 +66,15 @@ const WordReducer = (state = initialState,action) =>{
             })
             return {...state,listWord:newListWordAfterChangeSubtask}
 
+        case work.ADD_USER_TO_WORK:
+            const dataUserAdd = action.payload
+            console.log(dataUserAdd)
+            return state
+        
+        case work.REMOVE_USER_WORK:
+            const dataUserRemove = action.payload
+            console.log(dataUserRemove)
+            return state
         default:
             return state
     }

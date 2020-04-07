@@ -10,6 +10,8 @@ let initWorkRouter = (app) =>{
     router.post("/add-subtask",requireAuth,work.addSubtask)
     router.post("/change-status-work",requireAuth,work.changeStatusWork)
     router.post("/change-status-subtask",requireAuth,work.changeStatusSubtask)
+    router.post("/add-user",requireAuth,work.addUserToWork)
+    router.post("/remove-user",requireAuth,work.removeUserToWork)
     return app.use("/api/work",router)
 }
 

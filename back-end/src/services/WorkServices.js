@@ -1,11 +1,30 @@
 import WorkModel from './../model/WordModel'
 import SubtaskModel from './../model/SubTaskModel'
+import NotificationModel from './../model/NotificationModel'
 
 let createNewWork = (item)=>{
     return new Promise(async (resolve,reject)=>{
         const createNew = await WorkModel.createNew(item)
         if(!createNew){
             return reject("Tạo work mới thất bại")
+        }
+    
+        if(item.users.length > 0){
+            let addNotif = item.users.map(async user =>{
+                const newNotif = {
+                    notifType: "add_work",
+                    content: "đã thêm bạn vào một công việc mới",
+                    sendUser: item.account,
+                    tourId: createNew._id,
+                    receviceUser : user
+                }
+                const createNewNotif = await NotificationModel.createNew(newNotif)
+                if(!createNewNotif){
+                    return reject("Thêm thông báo thất bại")
+                }
+                return createNewNotif
+            })
+            await Promise.all(addNotif)
         }
         return resolve(createNew)
     })
@@ -65,10 +84,57 @@ let changeStatus = (data) =>{
     })
 }
 
+
+let addUserWork = (userId,workId,accountId) =>{
+    return new Promise(async (resolve,reject) =>{
+        const findWork = await WorkModel.findWorkById(workId)
+        if(!findWork){
+            return reject("không tìm thấy dữ liệu của công việc")
+        }
+        if(!findWork.users.includes(userId)){
+            findWork.users = findWork.users.concat(userId)
+            findWork.save()
+
+            const newNotif = {
+                notifType: "add_work",
+                content: "đã thêm bạn vào một công việc mới",
+                sendUser: accountId,
+                tourId: workId,
+                receviceUser : userId
+            }
+            const createNewNotif = await NotificationModel.createNew(newNotif)
+            if(!createNewNotif){
+                return reject("tạo thông báo thất bại")
+            }
+            return resolve("thêm thành viên vào công việc thành công")
+        }else{
+            return reject("Thành viên đã được thêm vào công việc này rồi")
+        }
+    })
+}
+
+let removeUserToWork = (userId,workId) =>{
+    return new Promise(async (resolve,reject) =>{
+        const findWork = await WorkModel.findWorkById(workId)
+        if(!findWork){
+            return reject("không tìm thấy dữ liệu của công việc")
+        }
+        if(findWork.users.includes(userId)){
+            findWork.users = findWork.users.filter(user => !user.equals(userId))
+            findWork.save()
+            return resolve("remove success")
+        }else{
+            return reject("thành viên này chưa có trong công việc nên k thể xoá được. vui lòng thử lại")
+        }
+    })
+}
+
 module.exports = {
     createNewWork:createNewWork,
     findAllWorkById:findAllWorkById,
     updateDealine:updateDealine,
     addSubTask:addSubTask,
-    changeStatus:changeStatus
+    changeStatus:changeStatus,
+    addUserWork:addUserWork,
+    removeUserToWork:removeUserToWork
 }

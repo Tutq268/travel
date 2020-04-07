@@ -34,9 +34,13 @@ const NotificationScreen = ({navigation}) =>{
     const showNotifData = data =>{
         if(!data.isRead){
             API.readNotification(data._id).then(res=>{
-                const data = res.data
-                if(data.result === "ok"){
-                    navigation.navigate("NotifTourDetail",{tourId: data.tourId})
+                const dataRead = res.data
+                if(dataRead.result === "ok"){
+                    if(notifType === "add_user" || notifType === "booked_ticket"){
+                        navigation.navigate("NotifTourDetail",{tourId: data.tourId})
+                    }else if(notifType === "add_work"){
+                        navigation.navigate("Word")
+                    }
                 }
                 else{
                    alert(data.message)

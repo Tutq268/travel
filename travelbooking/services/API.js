@@ -147,4 +147,12 @@ API.changeStatusSubTask = (param) =>{
     return API.instance.post("/work/change-status-subtask",param)
 }
 
+API.addUserToWork = (param) =>{
+    return API.instance.post("/work/add-user",param)
+}
+
+API.removeUserWork = (param) =>{
+    return API.instance.post("/work/remove-user",param)
+}
+
 export default API
