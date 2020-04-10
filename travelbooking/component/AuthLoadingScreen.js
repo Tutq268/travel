@@ -1,6 +1,7 @@
 import React,{useEffect} from 'react'
 import {View,Text,StyleSheet,TouchableOpacity,Image} from 'react-native'
 import AsyncStorage from '@react-native-community/async-storage'
+import {scaledSize} from './../config/nomalize'
 
 const AuthLoadingScreen = ({navigation}) =>{
 

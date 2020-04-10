@@ -4,6 +4,7 @@ import { useDispatch,useSelector } from 'react-redux'
 import {createAccount} from './../action/AuthAction'
 import SiteMap from './../common/SiteMap'
 import Icon from 'react-native-vector-icons/Ionicons'
+import {scaledSize} from './../config/nomalize'
 
 const SignUpScreen = ({navigation}) =>{
     const [username,setUsername] = useState("")
@@ -53,44 +54,44 @@ const SignUpScreen = ({navigation}) =>{
     }
     return (
         <SafeAreaView style={styles.container}>
-            <View style={{padding: 32,flex: 1}}>
+            <View style={{padding: scaledSize(32),flex: 1}}>
             <Icon 
                     onPress={() => navigation.goBack()}
                     name="ios-arrow-round-back"
                     size={32}
                     color="grey"
                 />
-               <Text style={{fontSize: 32,fontWeight: 'bold',marginTop: 16}}>Sign Up</Text>
+               <Text style={{fontSize: scaledSize(32),fontWeight: 'bold',marginTop: scaledSize(16)}}>Sign Up</Text>
                <View style={{flex: 1, justifyContent: 'center'}}>
                    {errSignUp.status === "failed" && _renderErrorSignup()}
-                   <View style={{marginBottom: 38}}>
-                    <Text style={{color: errInput.includes("username") ? "red" : "grey",fontSize: 15}}>Username</Text>
+                   <View style={{marginBottom: scaledSize(38)}}>
+                    <Text style={{color: errInput.includes("username") ? "red" : "grey",fontSize: scaledSize(15)}}>Username</Text>
                         <TextInput
                             value={username}
                             onChangeText={text => setUsername(text)}
-                            style={{height: 32,borderBottomColor: errInput.includes("username") ? "red" : 'grey',
+                            style={{height: scaledSize(32),borderBottomColor: errInput.includes("username") ? "red" : 'grey',
                                         borderBottomWidth: StyleSheet.hairlineWidth}}
                         />
                    </View>
 
-                   <View style={{marginBottom: 38}}>
+                   <View style={{marginBottom: scaledSize(38)}}>
                     <Text style={{ color: errInput.includes("phonenumber") ? "red": "grey",fontSize: 15}}>Phone number</Text>
                         <TextInput
                             value={phonenumber}
                             keyboardType="numeric"
                             onChangeText={text => setPhoneNumber(text)}
-                            style={{height: 32,borderBottomColor: errInput.includes("phonenumber") ? "red" : 'grey',
+                            style={{height: scaledSize(32),borderBottomColor: errInput.includes("phonenumber") ? "red" : 'grey',
                                     borderBottomWidth: StyleSheet.hairlineWidth}}
                         />
                    </View>
 
                    <View>
-                    <Text style={{color: errInput.includes("phonenumber") ? "red" : "grey",fontSize: 15}}>Password</Text>
+                    <Text style={{color: errInput.includes("phonenumber") ? "red" : "grey",fontSize: scaledSize(15)}}>Password</Text>
                         <TextInput
                             value={password}
                             onChangeText={text => setPassword(text)}
                             secureTextEntry
-                            style={{height: 32,borderBottomColor: errInput.includes("phonenumber") ? "red" : 'grey',borderBottomWidth: StyleSheet.hairlineWidth}}
+                            style={{height: scaledSize(32),borderBottomColor: errInput.includes("phonenumber") ? "red" : 'grey',borderBottomWidth: StyleSheet.hairlineWidth}}
                         />
                    </View>
                    {isLoading && screenName === "SignUp"
@@ -101,7 +102,7 @@ const SignUpScreen = ({navigation}) =>{
                      :<TouchableOpacity
                         onPress={() => SignUpAccount()}
                         style={styles.buttonSignUp}>
-                                <Text style={{fontWeight: "bold",color: "#fff",fontSize: 20}}>
+                                <Text style={{fontWeight: "bold",color: "#fff",fontSize: scaledSize(20)}}>
                                     Sign Up
                                 </Text>
                            
@@ -109,7 +110,7 @@ const SignUpScreen = ({navigation}) =>{
                     }
 
                     <TouchableOpacity 
-                        style={{width: '100%',alignItems:'center',marginTop: 16}}
+                        style={{width: '100%',alignItems:'center',marginTop: scaledSize(16)}}
                         onPress={() => navigation.goBack()}
                         >
                             <Text style={{color: 'grey',fontSize: 16}}>Already account? Sign In!</Text>
@@ -128,10 +129,10 @@ const styles = StyleSheet.create({
         flex: 1
     },
     buttonSignUp: {
-        borderRadius: 8,
-        marginTop: 32,
+        borderRadius: scaledSize(8),
+        marginTop: scaledSize(32),
         width: '100%',
-        height: 46,
+        height: scaledSize(46),
         backgroundColor: "#4EC1E2",
         alignItems:'center',
         justifyContent:"center"

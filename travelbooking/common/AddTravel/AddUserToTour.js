@@ -7,6 +7,8 @@ import {addUserToWork,removeUserWork} from './../../action/WorkAction'
 import AsyncStorage from '@react-native-community/async-storage'
 import apiUrl from './../../config/ApiUrl'
 import API from './../../services/API'
+import {scaledSize} from './../../config/nomalize'
+
 const AddUserToTour = ({navigation}) =>{
     const [textSearch,setTextSearch] = useState("")
     const {listUser,getUserError,userAdd} = useSelector(state => state.tour)
@@ -26,15 +28,15 @@ const AddUserToTour = ({navigation}) =>{
     },[])
     const _renderHeader = () =>{
         return(
-            <View style={{flexDirection: "row",paddingHorizontal: 16, alignItems:'center'}}>
+            <View style={{flexDirection: "row",paddingHorizontal: scaledSize(16), alignItems:'center'}}>
                 <TouchableOpacity activeOpacity={0.5} onPress ={() =>navigation.goBack()}>
                     <Icon 
                         name="ios-arrow-round-back"
-                        size={36}
+                        size={scaledSize(36)}
                         color="grey"
                     />
                 </TouchableOpacity>
-                <Text style={{fontSize: 20,flex: 1,textAlign:'center'}}>
+                <Text style={{fontSize: scaledSize(20),flex: 1,textAlign:'center'}}>
                        Choose User
                     </Text>
             </View>
@@ -43,13 +45,13 @@ const AddUserToTour = ({navigation}) =>{
 
     const _renderSearchUser = () =>{
         return(
-            <View style={{marginTop: 16,paddingHorizontal: 16}}>
+            <View style={{marginTop: scaledSize(16),paddingHorizontal: scaledSize(16)}}>
                 <View style={styles.searchView}>
                     <TextInput 
                         value={textSearch}
                         onChangeText={(text) => setTextSearch(text)}
                         placeholder="Type a username"
-                        style={{fontSize: 16}}
+                        style={{fontSize: scaledSize(16)}}
                     />
                 </View>
             </View>
@@ -58,7 +60,7 @@ const AddUserToTour = ({navigation}) =>{
     const _renderErrorGetUser = () =>{
         return(
             <View style={{flex: 1,justifyContent:'center',alignItems:'center'}}>
-                <TextInput style={{fontSize: 18,color: "red"}}>{getUserError}</TextInput>
+                <TextInput style={{fontSize: scaledSize(18),color: "red"}}>{getUserError}</TextInput>
             </View>
         )
     }
@@ -66,21 +68,26 @@ const AddUserToTour = ({navigation}) =>{
     const handleAdd = (data) =>{
         const screen = navigation.getParam("SCREEN")
         if(screen.name === "work"){
-            const param = {
-                userId: data._id,
-                workId: screen.workId
+            if(!screen.workId){
+                dispatch(addUser(data))
+            }else{
+                const param = {
+                    userId: data._id,
+                    workId: screen.workId
+                }
+                API.addUserToWork(param).then(res =>{
+                   const dataAdd = res.data
+                   if(dataAdd.result === "ok"){
+                      dispatch(addUser(data))
+                 
+                   }else{
+                       alert(dataAdd.message)
+                   }
+                }).catch(err =>{
+                    alert(err)
+                })
             }
-            API.addUserToWork(param).then(res =>{
-               const dataAdd = res.data
-               if(dataAdd.result === "ok"){
-                  dispatch(addUser(data))
-             
-               }else{
-                   alert(dataAdd.message)
-               }
-            }).catch(err =>{
-                alert(err)
-            })
+           
         }else{
             dispatch(addUser(data))
         }
@@ -118,16 +125,16 @@ const AddUserToTour = ({navigation}) =>{
         const checkAdd = userAdd.findIndex(user => user._id === data._id)
         return(
             <View key={index}
-                 style={{width: '100%',flex: 1,flexDirection: "row",paddingVertical: 16,alignItems:'center',borderBottomColor: '#ccc',borderBottomWidth: StyleSheet.hairlineWidth}}
+                 style={{width: '100%',flex: 1,flexDirection: "row",paddingVertical: scaledSize(16),alignItems:'center',borderBottomColor: '#ccc',borderBottomWidth: StyleSheet.hairlineWidth}}
                  >
                 <Image 
                     resizeMode="contain"
                     source= {!data.avatar ? require("./../../assets/default-avatar.png") :  {uri: apiUrl.host + data.avatar}}
-                    style={{width: 56,height:56,borderRadius: 56,flex: 0.3}}
+                    style={{width: scaledSize(56),height: scaledSize(56),borderRadius: scaledSize(56),flex: 0.3}}
                    />
-                <Text style={{fontSize: 20,fontWeight: "400",flex: 0.5}}>{data.username}</Text>
+                <Text style={{fontSize: scaledSize(20),fontWeight: "400",flex: 0.5}}>{data.username}</Text>
                  <TouchableOpacity style={{flex: 0.2}} onPress={() => checkAdd < 0 ?  handleAdd(data) : handleRemove(data._id)}>
-                        <Text style={{fontSize: 18,color: checkAdd < 0 ? "#4EC1E2" : "red",fontWeight: "400"}}>{checkAdd < 0  ? "Thêm" : "Xoá"}</Text>
+                        <Text style={{fontSize: scaledSize(18),color: checkAdd < 0 ? "#4EC1E2" : "red",fontWeight: "400"}}>{checkAdd < 0  ? "Thêm" : "Xoá"}</Text>
                     </TouchableOpacity>
             </View>
         )
@@ -135,7 +142,7 @@ const AddUserToTour = ({navigation}) =>{
     }
     const _renderListUser = () =>{
         return(
-            <View style={{flex: 1,marginVertical: 16,paddingHorizontal: 16,borderTopColor: "#ccc",borderTopWidth: StyleSheet.hairlineWidth}}>
+            <View style={{flex: 1,marginVertical: scaledSize(16),paddingHorizontal: scaledSize(16),borderTopColor: "#ccc",borderTopWidth: StyleSheet.hairlineWidth}}>
                 <FlatList 
                     data={listUser}
                     showsVerticalScrollIndicator={false}
@@ -167,12 +174,12 @@ const styles = StyleSheet.create({
     },
     searchView: {
         width: '100%',
-        height: 40,
+        height: scaledSize(40),
         backgroundColor: "#edebeb",
-        borderRadius: 16,
+        borderRadius: scaledSize(16),
         borderWidth: StyleSheet.hairlineWidth,
         justifyContent: 'center',
-        paddingHorizontal: 16
+        paddingHorizontal: scaledSize(16)
     }
 })
 

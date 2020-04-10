@@ -11,6 +11,7 @@ import {getListTour,clearAddUser,updateBookedTour,addUser,addHoldTour,removeAndB
 import { useDispatch,useSelector } from 'react-redux'
 import AsyncStorage from '@react-native-community/async-storage'
 import API from '../services/API'
+import {scaledSize} from './../config/nomalize'
 import HoldDetail from './HoldDetail'
 
 
@@ -50,7 +51,7 @@ const AddWordScreen = ({navigation}) =>{
    
     const _renderTicketHold = (count) =>{
         return (
-            <View style={{flexDirection: "row",marginRight: 16}}>
+            <View style={{flexDirection: "row",marginRight: scaledSize(16)}}>
                 <Text style={{color: "red"}}>{count} vé đang được giữ</Text>
             </View>
         )
@@ -82,8 +83,7 @@ const AddWordScreen = ({navigation}) =>{
     }
     const _renderHoldTour = (data,tourId) =>{
         return(
-            <View style={{marginTop: 10}}>
-        
+            <View style={{marginTop: scaledSize(10)}}>
                  <FlatList 
                     data={data}
                     keyExtractor ={(item,index) => `${index}`}
@@ -130,8 +130,8 @@ const AddWordScreen = ({navigation}) =>{
                  >
                 <View style={{flexDirection:'row',justifyContent:'space-between',alignItems:'center'}}>
                     <View style={{flexDirection: 'row'}}>
-                        <Text style={{fontSize: 15,color: "grey"}}>#{item.index + 1}</Text>
-                        <Text style={{fontSize: 15,color: "grey"}}> - </Text>
+                        <Text style={{fontSize: scaledSize(15),color: "grey"}}>#{item.index + 1}</Text>
+                        <Text style={{fontSize: scaledSize(15),color: "grey"}}> - </Text>
                        
                     </View>
                     {/* {data.tour_hold > 0 && _renderTicketHold(data.tour_hold)} */}
@@ -153,66 +153,72 @@ const AddWordScreen = ({navigation}) =>{
                                 color="grey"
                                 />
                         </MenuTrigger>
-                        <MenuOptions optionsContainerStyle={{ borderRadius: 16, marginTop: 20,width: 130,paddingVertical: 10 }}>
-                           <MenuOption style={{padding: 10,alignItems: 'center'}}
+                        <MenuOptions 
+                            optionsContainerStyle={{ 
+                                borderRadius: scaledSize(16),
+                                marginTop: scaledSize(20),
+                                width: scaledSize(130),
+                                paddingVertical: scaledSize(10)
+                                 }}>
+                           <MenuOption style={{padding: scaledSize(10),alignItems: 'center'}}
                                 onSelect={() => {
                                     setOpenHoldTicketDialog(true)
                                     setTourChoose(data)
                                     setTicketHold("")
                                 }}
                             >
-                              <Text style={{fontSize: 18,fontWeight: '500'}}>Giữ Vé</Text>
+                              <Text style={{fontSize: scaledSize(18),fontWeight: '500'}}>Giữ Vé</Text>
                            </MenuOption>
 
-                           <MenuOption style={{padding: 10,alignItems: 'center'}}
+                           <MenuOption style={{padding: scaledSize(10),alignItems: 'center'}}
                                 onSelect={() => {
                                     setOpenBookTicketDialog(true)
                                     setTourChoose(data)
                                     setTicketBook("")
                                 }}
                             >
-                              <Text  style={{fontSize: 18,fontWeight: '500'}}>Chốt Vé</Text>
+                              <Text  style={{fontSize: scaledSize(18),fontWeight: '500'}}>Chốt Vé</Text>
                            </MenuOption>
-                         {userId === data.admin && <MenuOption style={{padding: 10,alignItems: 'center'}}
+                         {userId === data.admin && <MenuOption style={{padding: scaledSize(10),alignItems: 'center'}}
                             onSelect={() =>{
                                 dispatch(addUser(data.users))
                                  SiteMap.showScreen(navigation,ScreenName.ADD_TRAVEL,{TOUR_ITEM: data})
                                 }}
                            >
-                              <Text  style={{fontSize: 18,fontWeight: '500'}}>Chỉnh Sửa</Text>
+                              <Text  style={{fontSize: scaledSize(18),fontWeight: '500'}}>Chỉnh Sửa</Text>
                            </MenuOption>}
                            {userId === data.admin &&
-                            <MenuOption style={{padding: 10,alignItems: 'center'}}
+                            <MenuOption style={{padding: scaledSize(10),alignItems: 'center'}}
                                 onSelect={() => setStar(data._id,!data.isStar)}
                             >
-                              <Text  style={{fontSize: 18,fontWeight: '500'}}>{data.isStar ? "Bỏ Ưu Tiên" : "Ưu Tiên"}</Text>
+                              <Text  style={{fontSize: scaledSize(18),fontWeight: '500'}}>{data.isStar ? "Bỏ Ưu Tiên" : "Ưu Tiên"}</Text>
                            </MenuOption>}
 
                            {userId === data.admin &&
-                            <MenuOption style={{padding: 10,alignItems: 'center'}}
+                            <MenuOption style={{padding: scaledSize(10),alignItems: 'center'}}
                                 onSelect={() => removeTour(data)}
                             >
-                              <Text  style={{fontSize: 18,fontWeight: '500'}}>Xoá Tour</Text>
+                              <Text  style={{fontSize: scaledSize(18),fontWeight: '500'}}>Xoá Tour</Text>
                            </MenuOption>}
                            {userId === data.admin &&
-                            <MenuOption style={{padding: 10,alignItems: 'center'}}
+                            <MenuOption style={{padding: scaledSize(10),alignItems: 'center'}}
                                 onSelect={() => bookmarkTour(data)}
                             >
-                              <Text  style={{fontSize: 18,fontWeight: '500'}}>Bookmark</Text>
+                              <Text  style={{fontSize: scaledSize(18),fontWeight: '500'}}>Bookmark</Text>
                            </MenuOption>}
                         </MenuOptions>
                     </Menu>
                 </View>
                 
-               {data.tourtrip !== "" && <Text style={{marginTop: 3,fontSize: 17,color: 'grey',fontWeight:'500',flex: 1,flexWrap: 'wrap'}}>{data.tourtrip}</Text>}
-                <View style={{flexDirection: 'row',justifyContent:'space-between',paddingRight: 16,marginTop: 5}}>
+               {data.tourtrip !== "" && <Text style={{marginTop: scaledSize(3),fontSize: scaledSize(17),color: 'grey',fontWeight:'500',flex: 1,flexWrap: 'wrap'}}>{data.tourtrip}</Text>}
+                <View style={{flexDirection: 'row',justifyContent:'space-between',paddingRight: scaledSize(16),marginTop: scaledSize(5)}}>
                     <View style={{flexDirection: 'row'}}>
-                        <Text style={{fontSize: 16,marginRight: 10,fontWeight: '500'}}>Giá:</Text>
-                        <Text style={{fontSize: 16,fontWeight: '500'}}>{numeral(data.ticketPrice).format('0,0')} vnđ</Text>
+                        <Text style={{fontSize: scaledSize(15),marginRight: scaledSize(8),fontWeight: '500'}}>Giá:</Text>
+                        <Text style={{fontSize: scaledSize(15),fontWeight: '500'}}>{numeral(data.ticketPrice).format('0,0')}vnđ</Text>
                     </View>
                     <View style={{flexDirection: 'row'}}>
-                         <Text style={{fontSize: 16,marginRight: 10,fontWeight: '500'}}>Khởi Hành:</Text>
-                        <Text style={{fontSize: 16,fontWeight: '500'}}>{moment(data.departureDate).format("DD/MM/YYYY")}</Text>
+                         <Text style={{fontSize: scaledSize(15),marginRight: scaledSize(8),fontWeight: '500'}}>Khởi Hành:</Text>
+                        <Text style={{fontSize: scaledSize(15),fontWeight: '500'}}>{moment(data.departureDate).format("DD/MM/YYYY")}</Text>
 
                     </View>
                 </View>
@@ -223,7 +229,7 @@ const AddWordScreen = ({navigation}) =>{
     const _renderEmtyTour = () =>{
         return(
             <View style={{flex: 1,justifyContent:"center",alignItems:'center'}}>
-                <Text style={{fontSize: 18,color:"grey"}}>Bạn chưa có Tour nào.!</Text>
+                <Text style={{fontSize: scaledSize(18),color:"grey"}}>Bạn chưa có Tour nào.!</Text>
             </View>
         )
     }
@@ -234,7 +240,7 @@ const AddWordScreen = ({navigation}) =>{
     const _renderListTour = (tours) =>{
         return(
             <FlatList 
-                style={{marginBottom: 68}}
+                style={{marginBottom: scaledSize(68)}}
                 data={tours}
                 refreshControl={
                     <RefreshControl 
@@ -257,7 +263,7 @@ const AddWordScreen = ({navigation}) =>{
                     dispatch(clearAddUser())
                     SiteMap.showScreen(navigation,ScreenName.ADD_TRAVEL,{TOUR_ITEM: "add"})
                     }}>
-                <Text style={{color: "white",fontSize: 20}}>Add Tour</Text>
+                <Text style={{color: "white",fontSize: scaledSize(20)}}>Add Tour</Text>
              </TouchableOpacity>
         )
     }
@@ -268,7 +274,7 @@ const AddWordScreen = ({navigation}) =>{
             <Dialog.Container visible={openHoldTicketDialog}>
             <Dialog.Title>Số chỗ cần giữ</Dialog.Title>
                 <TextInput
-                        style={{borderColor: "#ccc",paddingHorizontal: 16,marginBottom: 16,fontSize:18}}
+                        style={{borderColor: "#ccc",paddingHorizontal: scaledSize(16),marginBottom: scaledSize(16),fontSize:scaledSize(18)}}
                         placeholder="Số vé muốn giữ"
                         autoFocus={true}
                         value={ticketHold}
@@ -344,7 +350,7 @@ const AddWordScreen = ({navigation}) =>{
             <Dialog.Container visible={openBookTicketDialog}>
             <Dialog.Title>Số chỗ cần đặt</Dialog.Title>
                 <TextInput
-                        style={{borderColor: "#ccc",paddingHorizontal: 16,marginBottom: 16,fontSize:18}}
+                        style={{borderColor: "#ccc",paddingHorizontal: scaledSize(16),marginBottom: scaledSize(16),fontSize:scaledSize(18)}}
                         value={ticketBook}
                         onChangeText={(text) => setTicketBook(text)}
                         placeholder="Số vé muốn đặt"
@@ -360,9 +366,9 @@ const AddWordScreen = ({navigation}) =>{
     const _renderHeader = () =>{
         return(
             <View style={styles.headerView}>
-                <Text style={{fontSize: 18,fontWeight: '600',flex:1,textAlign:'center',marginLeft:50}}>Danh Sách Tour</Text>
+                <Text style={{fontSize: scaledSize(18),fontWeight: '600',flex:1,textAlign:'center',marginLeft:scaledSize(50)}}>Danh Sách Tour</Text>
                 <TouchableOpacity 
-                     style={{width: 50,justifyContent: 'center',alignItems: 'center'}}
+                     style={{width: scaledSize(50),justifyContent: 'center',alignItems: 'center'}}
                      onPress={() => setSearch(true)}
                      >
                     <Icon 
@@ -395,8 +401,8 @@ const AddWordScreen = ({navigation}) =>{
     const renderSearchView = () =>{
         return(
             <>
-            <View style={{flexDirection:'row',marginVertical: 8,paddingHorizontal: 16,alignItems:'center'}}>
-                <View style={{flex: 1,height: 36,backgroundColor: '#f0efed',borderRadius: 10,justifyContent:'center',paddingHorizontal: 8}}>
+            <View style={{flexDirection:'row',marginVertical: scaledSize(8),paddingHorizontal: scaledSize(16),alignItems:'center'}}>
+                <View style={{flex: 1,height: scaledSize(36),backgroundColor: '#f0efed',borderRadius: scaledSize(10),justifyContent:'center',paddingHorizontal: scaledSize(8)}}>
                     <TextInput 
                         value={textSearch}
                         onChangeText={text => getTourSearch(text)}
@@ -411,8 +417,8 @@ const AddWordScreen = ({navigation}) =>{
                         setTextSearch("")
                         dispatch(clearListTourSeatch())
                     }} 
-                        style={{marginLeft: 10}}>
-                     <Text style={{fontSize: 18,color: 'red'}}>Cancle</Text>
+                        style={{marginLeft: scaledSize(10)}}>
+                     <Text style={{fontSize: scaledSize(18),color: 'red'}}>Cancle</Text>
                 </TouchableOpacity>
             </View>
             {listTourSearch && _renderListTour(listTourSearch)}
@@ -439,7 +445,7 @@ const AddWordScreen = ({navigation}) =>{
 }
 const styles = StyleSheet.create({
     headerView: {
-        height: 40,
+        height: scaledSize(40),
         alignItems:'center',
         borderBottomColor: "#ccc",
         borderBottomWidth: StyleSheet.hairlineWidth,
@@ -448,15 +454,15 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: 'white',
-        paddingBottom: 16,
+        paddingBottom: scaledSize(16),
     },
     addTour :{
         position: 'absolute',
-        zIndex: 10,
-        bottom: 20,
-        left: 16,
-        width: width - 32,
-        height: 50,
+        zIndex: scaledSize(10),
+        bottom: scaledSize(20),
+        left: scaledSize(16),
+        width: width - scaledSize(32),
+        height: scaledSize(50),
         backgroundColor: "#4EC1E2",
         justifyContent: 'center',
         alignItems: 'center'
@@ -464,13 +470,13 @@ const styles = StyleSheet.create({
     tourItem : {
         flex: 1,
         flexDirection:'column',
-        paddingVertical: 10,
-        paddingHorizontal: 18,
+        paddingVertical: scaledSize(8),
+        paddingHorizontal: scaledSize(18),
         borderBottomColor: '#ccc',
         borderBottomWidth: StyleSheet.hairlineWidth
     },
     tourName:{
-        fontSize: 16,
+        fontSize: scaledSize(15),
         fontWeight:'500'
     }
 })

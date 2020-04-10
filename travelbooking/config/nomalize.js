@@ -1,6 +1,9 @@
-import { Dimensions,Platform } from 'react-native'
-const {width,height} = Dimensions.get("window")
-const isAndroid = Platform.OS === "android"
+import {Dimensions, Platform} from 'react-native'
+
+const { width, height } = Dimensions.get('window');
+
+const isAndroid=Platform.OS==='android';
+// Use iPhone6 as base size which is 375 x 667
 const baseWidth = isAndroid?414:375;
 const baseHeight = isAndroid?818:667;
 

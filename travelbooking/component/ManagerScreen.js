@@ -4,6 +4,8 @@ import API from './../services/API'
 import {useDispatch} from 'react-redux'
 import AsyncStorage from '@react-native-community/async-storage'
 import {logoutAccount} from './../action/AuthAction'
+import {scaledSize} from './../config/nomalize'
+
 const ManagerScreen = ({navigation}) =>{
     const [myInfo,setMyInfo] = useState()
     const distpatch = useDispatch()
@@ -154,9 +156,9 @@ const ManagerScreen = ({navigation}) =>{
         return(
             <View style={styles.container}>
             <View style={styles.itemStyle}>
-                <Text style={{fontSize: 30,fontWeight:'bold'}}>Settings</Text>
+                <Text style={{fontSize: scaledSize(30),fontWeight:'bold'}}>Settings</Text>
                 <Image 
-                    style={{width: 38,height: 38,borderRadius: 38}}
+                    style={{width: scaledSize(38),height: scaledSize(38),borderRadius: scaledSize(38)}}
                     source={{uri: "https://i.pinimg.com/originals/51/f6/fb/51f6fb256629fc755b8870c801092942.png"}}
                 />
             </View>
@@ -170,15 +172,15 @@ const ManagerScreen = ({navigation}) =>{
                     onChangeText={text => setUsernameEdit(text)} 
                     autoFocus={true}
                     />
-                    : <Text style={{fontSize: 18,fontWeight:'400'}}>{myInfo.username}</Text>
+                    : <Text style={{fontSize: scaledSize(18),fontWeight:'400'}}>{myInfo.username}</Text>
                 }
                 <View style={{flexDirection:"row",justifyContent:'center'}}>
                     <TouchableOpacity onPress={() => {editInfo === "username" ? saveEditInfo() : setEditInfo("username")}}>
-                        <Text style={{fontSize: 18,color: "#4EC1E2"}}> {editInfo === "username" ? "Save" : "Edit"} </Text>
+                        <Text style={{fontSize: scaledSize(18),color: "#4EC1E2"}}> {editInfo === "username" ? "Save" : "Edit"} </Text>
                     </TouchableOpacity>
                     {editInfo === "username" &&
                         <TouchableOpacity onPress={() => setEditInfo("")}>
-                            <Text style={{fontSize: 18,marginLeft:8,color: "red"}}>Cancle</Text>
+                            <Text style={{fontSize: scaledSize(18),marginLeft:scaledSize(8),color: "red"}}>Cancle</Text>
                         </TouchableOpacity>
                     }
                 </View>
@@ -196,15 +198,15 @@ const ManagerScreen = ({navigation}) =>{
                     onChangeText={text => setAddressEdit(text)} 
                     autoFocus={true}
                     />
-                 : <Text style={{fontSize: 18,fontWeight:'400'}}>{myInfo.address}</Text>
+                 : <Text style={{fontSize: scaledSize(18),fontWeight:'400'}}>{myInfo.address}</Text>
                 }
                 <View style={{flexDirection:"row"}}>
                     <TouchableOpacity onPress={() => {editInfo === "address" ? saveEditInfo() : setEditInfo("address")}}>
-                        <Text style={{fontSize: 18,color: "#4EC1E2"}}> {editInfo === "address" ? "Save" : "Edit"} </Text>
+                        <Text style={{fontSize: scaledSize(18),color: "#4EC1E2"}}> {editInfo === "address" ? "Save" : "Edit"} </Text>
                     </TouchableOpacity>
                     {editInfo === "address" &&
                         <TouchableOpacity onPress={() => setEditInfo("")}>
-                            <Text style={{fontSize: 18,marginLeft:8,color: "red"}}>Cancle</Text>
+                            <Text style={{fontSize: scaledSize(18),marginLeft:scaledSize(8),color: "red"}}>Cancle</Text>
                         </TouchableOpacity>
                     }
                 </View>
@@ -222,15 +224,15 @@ const ManagerScreen = ({navigation}) =>{
                         keyboardType="numeric"
                         autoFocus={true}
                         />
-                    : <Text style={{fontSize: 18,fontWeight:'400'}}>{myInfo.phone}</Text>
+                    : <Text style={{fontSize: scaledSize(18),fontWeight:'400'}}>{myInfo.phone}</Text>
                     }
                     <View style={{flexDirection:"row"}}>
                         <TouchableOpacity onPress={() => {editInfo === "phone" ? saveEditInfo() : setEditInfo("phone")}}>
-                            <Text style={{fontSize: 18,color: "#4EC1E2"}}> {editInfo === "phone" ? "Save" : "Edit"} </Text>
+                            <Text style={{fontSize: scaledSize(18),color: "#4EC1E2"}}> {editInfo === "phone" ? "Save" : "Edit"} </Text>
                         </TouchableOpacity>
                         {editInfo === "phone" &&
                             <TouchableOpacity onPress={() => setEditInfo("")}>
-                                <Text style={{fontSize: 18,marginLeft:8,color: "red"}}>Cancle</Text>
+                                <Text style={{fontSize: scaledSize(18),marginLeft:scaledSize(8),color: "red"}}>Cancle</Text>
                             </TouchableOpacity>
                         }
                     </View>
@@ -247,15 +249,15 @@ const ManagerScreen = ({navigation}) =>{
                         onChangeText={text => setEmailEdit(text)} 
                         autoFocus={true}
                         />
-                    : <Text style={{fontSize: 18,fontWeight:'400'}}>{myInfo.email}</Text>
+                    : <Text style={{fontSize: scaledSize(18),fontWeight:'400'}}>{myInfo.email}</Text>
                     }
                     <View style={{flexDirection:"row",justifyContent:'center'}}>
                         <TouchableOpacity onPress={() => {editInfo === "email" ? saveEditInfo() : setEditInfo("email")}}>
-                            <Text style={{fontSize: 18,color: "#4EC1E2"}}> {editInfo === "email" ? "Save" : "Edit"} </Text>
+                            <Text style={{fontSize: scaledSize(18),color: "#4EC1E2"}}> {editInfo === "email" ? "Save" : "Edit"} </Text>
                         </TouchableOpacity>
                         {editInfo === "email" &&
                             <TouchableOpacity onPress={() => setEditInfo("")}>
-                                <Text style={{fontSize: 18,marginLeft:8,color: "red"}}>Cancle</Text>
+                                <Text style={{fontSize: scaledSize(18),marginLeft:scaledSize(8),color: "red"}}>Cancle</Text>
                             </TouchableOpacity>
                         }
                     </View>
@@ -264,8 +266,8 @@ const ManagerScreen = ({navigation}) =>{
             <TouchableOpacity
                 activeOpacity={0.8}
                 onPress={() => _handleLogout()}
-                 style={{marginHorizontal: 32,marginTop: 32,backgroundColor: "#4EC1E2",height: 46,justifyContent:"center",alignItems:'center'}}>
-                <Text style={{color: "#fff",fontSize: 18,fontWeight: "500"}}>Đăng Xuất</Text>
+                 style={{marginHorizontal: scaledSize(32),marginTop: scaledSize(32),backgroundColor: "#4EC1E2",height: scaledSize(46),justifyContent:"center",alignItems:'center'}}>
+                <Text style={{color: "#fff",fontSize: scaledSize(18),fontWeight: "500"}}>Đăng Xuất</Text>
             </TouchableOpacity>
             
         </View>
@@ -281,25 +283,25 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: 'white',
-        padding: 32,
+        padding: scaledSize(32),
         flexDirection: 'column'
     },
     itemStyle: {
         flexDirection:'row',
         justifyContent: 'space-between',
-        marginBottom: 16
+        marginBottom: scaledSize(16)
     },
     titleSettingItem:{
         color:"grey",
-        fontSize: 18,
-        paddingVertical: 8
+        fontSize: scaledSize(18),
+        paddingVertical: scaledSize(8)
     },
     textInputEdit:{
         borderBottomColor: "grey",
         justifyContent:'flex-start' ,
         borderBottomWidth: StyleSheet.hairlineWidth,
-        fontSize: 18,
-        padding: 8,
+        fontSize: scaledSize(18),
+        padding: scaledSize(8),
         flex: 1,
         flexWrap: 'wrap'
     }

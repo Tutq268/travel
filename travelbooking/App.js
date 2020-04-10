@@ -12,7 +12,7 @@ import { createStore,applyMiddleware } from 'redux'
 const sagaMiddleware = createSagaMiddleware()
 const store = createStore(rootReducer,applyMiddleware(sagaMiddleware))
 sagaMiddleware.run(rootSaga)
-
+console.disableYellowBox = true
 const App = () => {
   return (
     <MenuProvider>

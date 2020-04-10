@@ -4,6 +4,8 @@ import API from './../services/API'
 import apiUrl from './../config/ApiUrl'
 import ScreenName from './../constant/ScreenName'
 import SiteMap from './../common/SiteMap'
+import {scaledSize} from './../config/nomalize'
+
 
 const NotificationScreen = ({navigation}) =>{
     const [notifData,setNotiData] = useState()
@@ -62,17 +64,25 @@ const NotificationScreen = ({navigation}) =>{
                 >
                  <Image
                     source= {!data.sendUser.avatar ? require("./../assets/default-avatar.png") :  {uri: apiUrl.host + data.sendUser.avatar}}
-                    style={{width: 50,height: 50,borderRadius: 50,marginRight: 16}}
+                    style={{
+                        width: scaledSize(45),
+                        height: scaledSize(45),
+                        borderRadius: scaledSize(45),
+                        marginRight: scaledSize(16)
+                    }}
                 />
                
-                <Text style={{fontSize: 18,flex: 1}}><Text style={{fontSize: 18,fontWeight: '600'}}>{data.sendUser.username}</Text> {data.content}</Text>  
+                <Text style={{fontSize: scaledSize(18),flex: 1}}>
+                    <Text style={{fontSize: scaledSize(18),fontWeight: '600'}}>{data.sendUser.username}
+                    </Text> {data.content}
+                </Text>  
             </TouchableOpacity>
         )
     }
     const _renderEmtyNotif = () =>{
         return(
             <View style={{flex: 1,justifyContent:"center",alignItems:'center'}}>
-                <Text style={{fontSize: 18,color:"grey"}}>Bạn chưa có thông báo.!</Text>
+                <Text style={{fontSize: scaledSize(18),color:"grey"}}>Bạn chưa có thông báo.!</Text>
             </View>
         )
     }
@@ -103,7 +113,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent:"space-between",
         alignItems:"center",
-        padding:16
+        padding:scaledSize(12)
     }
 })
 
